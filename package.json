@@ -1,0 +1,22 @@
+{
+    "name": "JSUnit",
+    "author": "Timon Schenzel",
+    "license": "MIT",
+    "private": true,
+    "bin": {
+        "tap-nodue": "./src/tap-nodue/tap-nodue.js"
+    },
+    "scripts": {
+        "test": "node node_modules/ava/cli.js src/jsunit.js --tap | tap-nodue || true",
+        "tests": "node node_modules/ava/cli.js src/jsunit.js --tap | tap-nodue || true"
+    },
+    "dependencies": {
+        "auto-loader": "^0.2.0",
+        "ava": "^0.22.0",
+        "colors": "^1.1.2",
+        "diff": "^3.4.0",
+        "hirestime": "^3.1.1",
+        "tap-parser": "^6.0.1",
+        "traceback": "^0.3.1"
+    }
+}
