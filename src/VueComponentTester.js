@@ -2,7 +2,17 @@ module.exports = class VueComponentTester
 {
     constructor(testCaseInstance, template)
     {
-        this.vm = new Vue({ template });
+        this.component = Vue.options.components['hello-world'];
+        let component = this.component;
+
+        this.vm = new Vue({
+            template: component.sealedOptions.template,
+            data() {
+                return component.sealedOptions.data();
+            },
+            methods: component.sealedOptions.methods,
+        });
+
         this.template = template;
         this.html = null;
         this.tester = testCaseInstance;
