@@ -106,7 +106,7 @@ module.exports = class TestRunner
 			} catch(error) {
                 console.error(chalk.red(`${figures.cross} jsUnit error`));
                 console.error(error);
-                process.exit();
+                process.exit(0);
 			}
 		}
 	}
@@ -174,7 +174,7 @@ module.exports = class TestRunner
 			}
 		} catch (error) {
 			if (error instanceof Error && error.code === 'ENOENT') {
-				console.error(`${chalk.red(figures.cross)} Directory [${path}] don't exists.`);
+				console.error(chalk.red(`${figures.cross} Directory [${path}] don't exists.`));
 			}
 
 			process.exit(0);

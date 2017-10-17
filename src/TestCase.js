@@ -1,5 +1,11 @@
 module.exports = class TestCase
 {
+	constructor()
+	{
+		this.vm = null;
+		this.name = null;
+	}
+
 	assertEquals(expected, value, message)
 	{
 		value = this.normalizeValue(value);
