@@ -2,20 +2,20 @@ module.exports = class VueComponentTester
 {
     constructor(testCaseInstance, template)
     {
-        this.component = Vue.options.components['hello-world'];
-        let component = this.component;
-
-        this.vm = new Vue({
-            template: component.sealedOptions.template,
-            data() {
-                return component.sealedOptions.data();
-            },
-            methods: component.sealedOptions.methods,
-        });
-
         this.template = template;
         this.html = null;
         this.tester = testCaseInstance;
+        this.tagName = template.match(/<([^\s>]+)(\s|>)+/)[1];
+        this.component = Vue.options.components[this.tagName];
+
+        if (! this.component) {
+            throw new Error(`Component [${this.tagName}] don't exists.`);
+        }
+
+        let testComponent = this.component.sealedOptions;
+        testComponent.template = `<tester>${this.template}</tester>`;
+
+        this.vm = new Vue(testComponent);
     }
 
     static test(testCaseInstance, template)
@@ -41,7 +41,7 @@ module.exports = class VueComponentTester
         html = html.replace(' data-server-rendered="true"', '');
 
         if (html == this.template) {
-            throw new Error(`Component [${this.template}] don't exists.`);
+            throw new Error(`Component [${this.tagName}] don't exists.`);
         }
 
         return html;
