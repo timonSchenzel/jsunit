@@ -1,7 +1,3 @@
-Vue.component('tester', {
-    template: `<slot></slot>`,
-});
-
 Vue.component('hello-world', {
     template: `<div :class="color">{{ text }}</div>`,
 

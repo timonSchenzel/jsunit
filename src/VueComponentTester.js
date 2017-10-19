@@ -4,18 +4,49 @@ module.exports = class VueComponentTester
     {
         this.template = template;
         this.html = null;
+        this.props = null;
         this.tester = testCaseInstance;
         this.tagName = template.match(/<([^\s>]+)(\s|>)+/)[1];
+        this.rawProps = template.match(/\s([^\>]+)(|>)+/);
+
+        if (this.rawProps && this.rawProps[1]) {
+            this.rawProps = this.rawProps[1];
+            this.props = this.parseProps();
+        } else {
+            this.rawProps = null;
+        }
+
         this.component = Vue.options.components[this.tagName];
 
         if (! this.component) {
             throw new Error(`Component [${this.tagName}] don't exists.`);
         }
 
+        // console.log(this.component.sealedOptions);
         let testComponent = this.component.sealedOptions;
-        testComponent.template = `<tester>${this.template}</tester>`;
+        // testComponent.template = this.template;
+
+        // console.log(testComponent);
+        // let templateParts = testComponent.template.split('>');
+        // templateParts[0] = `${templateParts[0]} ${this.props}`;
+        // testComponent.template = templateParts.join('>');
 
         this.vm = new Vue(testComponent);
+
+        // this.vm._props.color = 'red';
+    }
+
+    parseProps()
+    {
+        let props = {};
+
+        this.rawProps.split(' ').map(prop => {
+            return prop.split('=');
+        }).forEach(prop => {
+            props[prop[0]] = prop[1].replace(/"/g, '');
+        });
+
+        return props;
     }
 
     static test(testCaseInstance, template)
