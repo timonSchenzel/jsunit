@@ -4,7 +4,7 @@ module.exports = class VueComponentTester
     {
         this.template = template;
         this.html = null;
-        this.props = null;
+        this.props = {};
         this.tester = testCaseInstance;
         this.tagName = template.match(/<([^\s>]+)(\s|>)+/)[1];
         this.rawProps = template.match(/\s([^\>]+)(|>)+/);
@@ -22,27 +22,30 @@ module.exports = class VueComponentTester
             throw new Error(`Component [${this.tagName}] don't exists.`);
         }
 
-        // console.log(this.component.sealedOptions);
         let testComponent = this.component.sealedOptions;
-        // testComponent.template = this.template;
-
-        // console.log(testComponent);
-        // let templateParts = testComponent.template.split('>');
-        // templateParts[0] = `${templateParts[0]} ${this.props}`;
-        // testComponent.template = templateParts.join('>');
 
         this.vm = new Vue(testComponent);
 
-        // this.vm._props.color = 'red';
+        for (var prop in this.props) {
+            this.vm._props[prop] = this.props[prop];
+        }
     }
 
     parseProps()
     {
         let props = {};
 
+        this.rawProps = this.rawProps.replace(/\s/g, '');
+        this.rawProps = this.rawProps.replace(/"/g, '" ');
+        this.rawProps = this.rawProps.replace(/=" /g, '="');
+
         this.rawProps.split(' ').map(prop => {
             return prop.split('=');
         }).forEach(prop => {
+            if (! prop[0]) {
+                return;
+            }
+
             props[prop[0]] = prop[1].replace(/"/g, '');
         });
 

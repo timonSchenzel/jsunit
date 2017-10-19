@@ -7,7 +7,6 @@ module.exports = class HelloWorldTest extends VueComponentTestCase
         this.assertEquals('<div class="red">Hello World</div>', await component.toHtml());
 
         component.vm.changeText('Hello JSUnit');
-        console.log(await component.toHtml());
         this.assertEquals('<div class="red">Hello JSUnit</div>', await component.toHtml());
     }
 
@@ -15,7 +14,6 @@ module.exports = class HelloWorldTest extends VueComponentTestCase
     async it_is_able_to_specify_a_text_color()
     {
         let component = this.render('<hello-world color="red"></hello-world>');
-        console.log(await component.toHtml());
         this.assertEquals('<div class="red">Hello World</div>', await component.toHtml());
     }
 }
