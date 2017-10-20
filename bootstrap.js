@@ -11,6 +11,10 @@ Vue.component('hello-world', {
 
     methods: {
         changeText(text) {
+            if (text == 'Bad text') {
+                return;
+            }
+
             this.text = text;
         },
     }

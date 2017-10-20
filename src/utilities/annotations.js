@@ -19,8 +19,8 @@ var linetypes = {
   fnsig6      : { pattern: /^\s*(var|let|const)\s+(\w+)\s*=\s*new Function/, returns: { name:2 } },
   fnsig7      : { pattern: /^\s*(var|let|const)\s+(\w+)\s*=\s*\(.*?\)\s*=>/, returns: { name:2 } },
   fnsig8      : { pattern: /^\s?module.exports\s*=\s*{/, returns: { name:'module' } },
-  fnsig9     : { pattern: /async\s(\w+)\s?/, returns: { name:1 } },
-  fnsig10      : { pattern: /^\s?(\w+)\s?/, returns: { name:1 } },
+  es6asyncfn  : { pattern: /async\s(\w+)\s?/, returns: { name:1 } },
+  es6fn       : { pattern: /\s?(\w+)\s?/, returns: { name:1 } },
 };
 
 function trim(str) {
@@ -96,7 +96,6 @@ function analyze(data) {
           current[type.name] = annotationValue;
         }
         break;
-
       case 'fnsig1':
       case 'fnsig2':
       case 'fnsig3':
@@ -105,8 +104,8 @@ function analyze(data) {
       case 'fnsig6':
       case 'fnsig7':
       case 'fnsig8':
-      case 'fnsig9':
-      case 'fnsig10':
+      case 'es6asyncfn':
+      case 'es6fn':
         // Store current annotations under function name
         annotations[type.name] = current;
         current = {};

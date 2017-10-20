@@ -75,7 +75,7 @@ module.exports = class TestRunner
 	{
 		let annotations = this.annotations.getSync(this.path(`${location}/${path}.js`));
 
-		for (let name of Object.getOwnPropertyNames(Object.getPrototypeOf(testClass))) {
+        for (let name of Object.getOwnPropertyNames(Object.getPrototypeOf(testClass))) {
 			let hasTestAnnotation = false;
 		    let method = testClass[name];
 

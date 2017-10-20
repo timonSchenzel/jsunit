@@ -7,8 +7,8 @@
         "tap-nodue": "./src/tap-nodue/tap-nodue.js"
     },
     "scripts": {
-        "test": "node node_modules/ava/cli.js src/jsunit.js --tap | tap-nodue || true",
-        "tests": "node node_modules/ava/cli.js src/jsunit.js --tap | tap-nodue || true"
+        "test": "node node_modules/ava/cli.js src/jsunit.js --tap | tap-nodue || 2>& /dev/null",
+        "tests": "node node_modules/ava/cli.js src/jsunit.js --tap | tap-nodue || 2>& /dev/null"
     },
     "dependencies": {
         "auto-loader": "^0.2.0",
