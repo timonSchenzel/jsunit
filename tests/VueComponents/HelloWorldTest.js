@@ -3,9 +3,11 @@ module.exports = class HelloWorldTest extends VueComponentTestCase
     /** @test */
     async it_is_able_to_change_the_component_text()
     {
+        let component = this.render('<hello-world></hello-world>');
+
         component.changeText('Hello JSUnit');
 
-        this.assertEquals('<div class="red">Hello JSUnit</div>', await component.toHtml());
+        this.assertEquals('<div>Hello JSUnit</div>', await component.toHtml());
     }
 
     /** @test */
@@ -17,7 +19,7 @@ module.exports = class HelloWorldTest extends VueComponentTestCase
     }
 
     /** @test */
-    async it_will_prevent_updating_its_text_to_some_bad_text()
+    async it_will_prevent_updating_its_text_with_some_bad_text()
     {
         let component = this.render('<hello-world></hello-world>');
 
