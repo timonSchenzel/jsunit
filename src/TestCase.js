@@ -174,11 +174,17 @@ module.exports = class TestCase
 
 		let regExp = /\(([^)]+)\)/;
 		let matches = regExp.exec(fileName);
-		fileName = matches[1];
-		let parts = fileName.split(':');
-		parts.pop();
+		if (matches) {
+			fileName = matches[1];
+		}
 
-		fileName = parts.join(':');
+		if (fileName) {
+			let parts = fileName.split(':');
+			parts.pop();
+			fileName = parts.join(':');
+		} else {
+			return name;
+		}
 
 		let rootFolder = process.mainModule.paths[0].split('node_modules')[0].slice(0, -1) + '/';
 		let relativeFileName = fileName.replace(rootFolder, '');
@@ -225,7 +231,5 @@ module.exports = class TestCase
 			.join('\n');
 
 		return name + ' on ' + sourceInput.file + ':' + sourceInput.line;
-
-		// return this.name + '\n  ' + chalk.dim(relativeFileName) + '\n\n' + errorContent;
 	}
 }

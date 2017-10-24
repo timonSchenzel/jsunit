@@ -60,27 +60,10 @@ module.exports = class VueComponentTester
         return tester;
     }
 
-    async toHtml()
+    toHtml()
     {
-        let html = null;
-
-        await VueRenderer.renderToString(
-            this.vm,
-            async (error, result) => {
-                if (error) {
-                    log.error(`Vue server renderer error:\n${error}`);
-                }
-                html = result;
-            }
-        );
-
-        html = html.replace(' data-server-rendered="true"', '');
-
-        if (html == this.template) {
-            throw new Error(`Component [${this.tagName}] don't exists.`);
-        }
-
-        return html;
+        this.wrapper.update();
+        return this.wrapper.html();
     }
 
     assertSee(expression)
@@ -91,7 +74,9 @@ module.exports = class VueComponentTester
             expression = new RegExp(expression, 'gim');
         }
 
-        this.tester.assertRegExp(expression, this.html, `Assert that "${rawExpression}" should exists on the page, but it was not found.`);
+        let html = this.toHtml();
+
+        this.tester.assertRegExp(expression, html, `Assert that "${rawExpression}" should exists on the page, but it was not found.`);
 
         return this;
     }
@@ -106,7 +91,7 @@ module.exports = class VueComponentTester
         return this.assertSee(expression);
     }
 
-    async assertNotSee(expression)
+    assertNotSee(expression)
     {
         let rawExpression = expression;
 
@@ -114,7 +99,7 @@ module.exports = class VueComponentTester
             expression = new RegExp(expression, 'gim');
         }
 
-        this.tester.assertNotRegExp(expression, await this.toHtml(), `Assert that "${rawExpression}" should not exists on the page, but it was found.`);
+        this.tester.assertNotRegExp(expression, this.toHtml(), `Assert that "${rawExpression}" should not exists on the page, but it was found.`);
     }
 
     andNotSee(expression)
@@ -159,6 +144,19 @@ module.exports = class VueComponentTester
 
     click(selector)
     {
-        this.wrapper.find(selector).trigger('click');
+        this.find(selector).trigger('click');
+    }
+
+    typeInto(selector, value)
+    {
+        let elementWrapper = this.find(selector);
+
+        elementWrapper.element.value = value;
+        elementWrapper.trigger('input');
+    }
+
+    find(selector)
+    {
+        return this.wrapper.find(selector);
     }
 }

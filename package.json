@@ -7,8 +7,8 @@
         "tap-nodue": "./src/tap-nodue/tap-nodue.js"
     },
     "scripts": {
-        "test": "FORCE_COLOR=1 node node_modules/ava/cli.js src/jsunit.js --tap | tap-nodue || true",
-        "tests": "FORCE_COLOR=1 node node_modules/ava/cli.js src/jsunit.js --tap | tap-nodue || true"
+        "test": "node node_modules/ava/cli.js src/jsunit.js --tap | tap-nodue || true",
+        "tests": "node node_modules/ava/cli.js src/jsunit.js --tap | tap-nodue || true"
     },
     "dependencies": {
         "auto-loader": "^0.2.0",
