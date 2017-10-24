@@ -65,13 +65,6 @@ global.Vue = require('Vue');
 Vue.config.productionTip = false;
 
 /**
- * Load Vue.
- *
- * @type {Object}
- */
-global.VueRenderer = require('vue-server-renderer').createRenderer();
-
-/**
  * Load chalk package, terminal/cmd string styling done right.
  *
  * @type {Object}
