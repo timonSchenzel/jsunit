@@ -1,5 +1,5 @@
 Vue.component('hello-world', {
-    template: `<div :class="color">{{ text }}</div>`,
+    template: `<div :class="color"><button @click="changeTextFromButton">Change text</button>{{ text }}</div>`,
 
     props: ['color'],
 
@@ -17,5 +17,9 @@ Vue.component('hello-world', {
 
             this.text = text;
         },
+
+        changeTextFromButton() {
+            this.changeText('From button');
+        }
     }
 });

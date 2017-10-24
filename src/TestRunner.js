@@ -54,9 +54,12 @@ module.exports = class TestRunner
 				require(this.path(this.config.bootstrap));
 			}
 		} catch (error) {
-			if (error instanceof Error && error.code === 'MODULE_NOT_FOUND') {
-				console.error(`${chalk.red(figures.cross)} Bootstrap file [${this.config.bootstrap}] don't exists.`);
-			}
+            if (error instanceof Error && error.code === 'MODULE_NOT_FOUND') {
+                console.error(`${chalk.red(figures.cross)} Bootstrap file [${this.config.bootstrap}] don't exists.`);
+            } else {
+                console.error(`${chalk.red(figures.cross)} Bootstrap error:`);
+                console.log(error);
+            }
 
 			process.exit(0);
 		}

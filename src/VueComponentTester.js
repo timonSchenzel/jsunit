@@ -24,7 +24,9 @@ module.exports = class VueComponentTester
 
         let testComponent = this.component.sealedOptions;
 
-        this.vm = new Vue(testComponent);
+        // this.vm = new Vue(testComponent);
+        this.wrapper = vueTestUtils.mount(testComponent);
+        this.vm = this.wrapper.vm;
 
         for (var prop in this.props) {
             this.vm._props[prop] = this.props[prop];
@@ -153,5 +155,10 @@ module.exports = class VueComponentTester
         this.tester.assertTrue(isNotVisible);
 
         return this;
+    }
+
+    click(selector)
+    {
+        this.wrapper.find(selector).trigger('click');
     }
 }

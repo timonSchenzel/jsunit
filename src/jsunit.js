@@ -1,5 +1,8 @@
 Error.prepareStackTrace = null;
 global.traceback = require('./utilities/traceback');
+
+require('jsdom-global')();
+
 let startDate = new Date();
 
 let annotations = require('./utilities/annotations');
@@ -47,11 +50,19 @@ global.VueComponentTestCase = require('./VueComponentTestCase');
 global.VueComponentTester = require('./VueComponentTester');
 
 /**
+ * Load VueTestUtils class.
+ *
+ * @type {Object}
+ */
+global.vueTestUtils = require('vue-test-utils');
+
+/**
  * Load Vue.
  *
  * @type {Object}
  */
 global.Vue = require('Vue');
+Vue.config.productionTip = false;
 
 /**
  * Load Vue.

@@ -34,4 +34,14 @@ module.exports = class VueComponentTestCase extends TestCase
             },
         });
     }
+
+    assertSee(regex, contents, message)
+    {
+        this.assertRegExp(regex, contents, message);
+    }
+
+    assertNotSee(regex, contents, message)
+    {
+        this.assertNotRegExp(regex, contents, message);
+    }
 }

@@ -7,18 +7,23 @@
         "tap-nodue": "./src/tap-nodue/tap-nodue.js"
     },
     "scripts": {
-        "test": "node node_modules/ava/cli.js src/jsunit.js --tap | tap-nodue || 2>& /dev/null",
-        "tests": "node node_modules/ava/cli.js src/jsunit.js --tap | tap-nodue || 2>& /dev/null"
+        "test": "FORCE_COLOR=1 node node_modules/ava/cli.js src/jsunit.js --tap | tap-nodue || true",
+        "tests": "FORCE_COLOR=1 node node_modules/ava/cli.js src/jsunit.js --tap | tap-nodue || true"
     },
     "dependencies": {
         "auto-loader": "^0.2.0",
         "ava": "^0.22.0",
+        "chalk": "^2.3.0",
         "colors": "^1.1.2",
         "diff": "^3.4.0",
         "hirestime": "^3.1.1",
+        "jsdom": "^11.3.0",
+        "jsdom-global": "^3.0.2",
         "tap-parser": "^6.0.1",
         "traceback": "^0.3.1",
         "vue": "^2.5.2",
-        "vue-server-renderer": "^2.5.2"
+        "vue-server-renderer": "^2.5.2",
+        "vue-template-compiler": "^2.5.2",
+        "vue-test-utils": "^1.0.0-beta.3"
     }
 }

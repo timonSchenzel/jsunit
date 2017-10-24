@@ -105,6 +105,10 @@ module.exports = class TestCase
 
 	assertRegExp(regex, contents, message)
 	{
+		if (typeof regex == 'string') {
+		    regex = new RegExp(regex, 'gim');
+		}
+
 		// .regex(contents, regex, [message])
 		test(this.visualError(), async t => {
 			await t.regex(contents, regex, message);
@@ -113,6 +117,10 @@ module.exports = class TestCase
 
 	assertNotRegExp(regex, contents, message)
 	{
+		if (typeof regex == 'string') {
+		    regex = new RegExp(regex, 'gim');
+		}
+
 		// .notRegex(contents, regex, [message])
 		test(this.visualError(), async t => {
 			await t.notRegex(contents, regex, message);
