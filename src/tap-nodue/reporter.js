@@ -112,36 +112,30 @@ const reporter = () => {
 
       for (message in assert.diag.values) {
         visualErrors += '\n\n  ' + message + '\n';
-        // visualErrors += '\n' + assert.diag.values[message] + '\n';
 
         let diffValue = assert.diag.values[message];
         let parsedValue = null;
 
         if (assert.diag.values['Difference:']) {
-          diffValue = diffValue.trim()
-          console.log(assert);
-          parsedValue = diffValue;
-          const actualDescriptor = concordance.describe([1, 2, 3], concordanceOptions);
-          const expectedDescriptor = concordance.describe([2, 3, 4, 5], concordanceOptions);
+          let raw = parseRawData(diffValue);
+
+          const actualDescriptor = concordance.describe(raw.actual, concordanceOptions);
+          const expectedDescriptor = concordance.describe(raw.expected, concordanceOptions);
           let diff = formatDescriptorDiff(actualDescriptor, expectedDescriptor);
 
-          // console.log(diff.formatted);
-
+          visualErrors += '\n' + diff.formatted + '\n';
         } else {
           try {
             parsedValue = eval(diffValue);
           } catch (error) {
             parsedValue = diffValue;
           }
-        }
-        // let diffValue = JSON.parse(diffValue);
 
         let values = formatWithLabel('', parsedValue);
-
         visualErrors += '\n  ' + values.formatted + '\n';
+        }
       };
 
-      // visualErrors += visualDiff(assert);
       visualErrors += '\n';
     }
   });
@@ -149,6 +143,38 @@ const reporter = () => {
   const timer = hirestime() // todo: init when first test running
 
   return result
+}
+
+function parseRawData(data) {
+  let actual;
+  let expected;
+  let actualRaw = '';
+  let expectedRaw = '';
+
+  data = data.trim();
+  data.split('\n').forEach(line => {
+    if (line.startsWith('-')) {
+      actualRaw += line.replace('-', '').replace(/\'/g, '').trim();
+    } else if (line.startsWith('+')) {
+      expectedRaw += line.replace('+', '').replace(/\'/g, '').trim();
+    } else {
+      actualRaw += line.replace(/\'/g, '').trim();
+      expectedRaw += line.replace(/\'/g, '').trim();
+    }
+  });
+
+  try {
+    actual = eval(`(${actualRaw})`);
+    expected = eval(`(${expectedRaw})`);
+  } catch(error) {
+    actual = actualRaw;
+    expected = expectedRaw;
+  }
+
+  return {
+    actual,
+    expected,
+  }
 }
 
 function formatDescriptorDiff(actualDescriptor, expectedDescriptor, options) {
