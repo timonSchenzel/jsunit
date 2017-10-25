@@ -1,5 +1,5 @@
 require('colors');
-var fs = require('fs');
+const fs = require('fs');
 const PassThrough = require('readable-stream/passthrough');
 const duplexer = require('duplexer3');
 const hirestime = require('hirestime');
@@ -7,38 +7,34 @@ const Parser = require('tap-parser');
 const ms = require('pretty-ms');
 const chalk = require('chalk');
 const util = require('util');
-var jsdiff = require('diff');
+const jsdiff = require('diff');
 
 const concordance = require('concordance');
 const concordanceOptions = require('ava/lib/concordance-options').default;
 const concordanceDiffOptions = require('ava/lib/concordance-options').diff;
 
-// const serializeError = require('ava/lib/serialize-error');
 const formatSerializedError = require('ava/lib/reporters/format-serialized-error');
 const improperUsageMessages = require('ava/lib/reporters/improper-usage-messages');
 
 let testsOverview = '';
 let visualErrors = '';
 let noTestsFound = false;
+let startTime = new Date().getTime();
 
 const reporter = () => {
   const onResults = (data) => {
     const time = timer()
 
+    if (noTestsFound == false) {
+      output.write('  ' + chalk.dim(`Time: ${ms(time)}\n`));
+    }
+
     output.write('  ' + testsOverview);
     output.write("\n");
     output.write(visualErrors);
 
-    const msg = `${data.fail} ${data.fail > 1 ? 'tests' : 'test'} fail (${ms(time)})`
-
     result.count = data.count
     result.errors = data.failures
-
-    // if (data.count === 0 || data.fail > 0) {
-    //   output.end('\n' + chalk.red(msg) + '\n')
-    // } else {
-    //   output.end('\n' + chalk.green(data.pass) + '\n')
-    // }
 
     if (noTestsFound) {
       return;
@@ -46,8 +42,8 @@ const reporter = () => {
 
     if (data.fail) {
       output.write("\n");
-      output.write('  ' + chalk.red(data.fail + ' failed\n'));
       output.write('  ' + chalk.green(data.pass + ' passed\n'));
+      output.write('  ' + chalk.red(data.fail + ' failed\n'));
     } else {
       output.write('  ' + chalk.green(data.pass + ' passed\n'));
     }
@@ -86,7 +82,7 @@ const reporter = () => {
     let file = '';
     let formattedDiff = '';
 
-    [name, file] = assert.name.split(' on ');
+    [name, file] = assert.name.split(' at ');
 
     if (assert.diag && assert.diag.message && assert.diag.message.includes('--stack')) {
       [message, stack] = assert.diag.message.split(' --stack ');
@@ -120,10 +116,23 @@ const reporter = () => {
 
         let diffValue = assert.diag.values[message];
         let parsedValue = null;
-        try {
-          parsedValue = eval(diffValue);
-        } catch (error) {
+
+        if (assert.diag.values['Difference:']) {
+          diffValue = diffValue.trim()
+          console.log(assert);
           parsedValue = diffValue;
+          const actualDescriptor = concordance.describe([1, 2, 3], concordanceOptions);
+          const expectedDescriptor = concordance.describe([2, 3, 4, 5], concordanceOptions);
+          let diff = formatDescriptorDiff(actualDescriptor, expectedDescriptor);
+
+          // console.log(diff.formatted);
+
+        } else {
+          try {
+            parsedValue = eval(diffValue);
+          } catch (error) {
+            parsedValue = diffValue;
+          }
         }
         // let diffValue = JSON.parse(diffValue);
 
@@ -140,6 +149,14 @@ const reporter = () => {
   const timer = hirestime() // todo: init when first test running
 
   return result
+}
+
+function formatDescriptorDiff(actualDescriptor, expectedDescriptor, options) {
+  options = Object.assign({}, options, concordanceDiffOptions);
+  return {
+    label: 'Difference:',
+    formatted: concordance.diffDescriptors(actualDescriptor, expectedDescriptor, options)
+  };
 }
 
 function formatDescriptorWithLabel(label, descriptor) {

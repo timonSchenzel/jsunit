@@ -98,5 +98,3 @@ jsUnit.boot();
  * Finally, Run all tests found in all the test classes.
  */
 jsUnit.test();
-
-console.log(chalk.dim(`  Time: ${(new Date() - startDate) / 1000} seconds`));

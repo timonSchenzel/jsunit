@@ -230,6 +230,6 @@ module.exports = class TestCase
 			})
 			.join('\n');
 
-		return name + ' on ' + sourceInput.file + ':' + sourceInput.line;
+		return name + ' at ' + sourceInput.file + ':' + sourceInput.line;
 	}
 }

@@ -52,3 +52,4 @@ module.exports = class HelloWorldTest extends VueComponentTestCase
         this.assertEquals('My title', component.find('h1').text());
     }
 }
+

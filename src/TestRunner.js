@@ -55,9 +55,9 @@ module.exports = class TestRunner
 			}
 		} catch (error) {
             if (error instanceof Error && error.code === 'MODULE_NOT_FOUND') {
-                console.error(`${chalk.red(figures.cross)} Bootstrap file [${this.config.bootstrap}] don't exists.`);
+                console.error(`  ${chalk.red(figures.cross)} Bootstrap file [${this.config.bootstrap}] don't exists.`);
             } else {
-                console.error(`${chalk.red(figures.cross)} Bootstrap error:`);
+                console.error(chalk.red(`  ${figures.cross} jsUnit bootstrap error`));
                 console.log(error);
             }
 
@@ -69,9 +69,16 @@ module.exports = class TestRunner
 
 	async test()
 	{
-		for (let location in this.locations) {
-			await this.runTestsInLocation(location);
-		}
+        try {
+    		for (let location in this.locations) {
+    			await this.runTestsInLocation(location);
+    		}
+        } catch (error) {
+            console.error(chalk.red(`  ${figures.cross} jsUnit error`));
+            console.error(error);
+
+            process.exit(0);
+        }
 	}
 
 	async runTestsInClass(testClass, path, location)
@@ -104,13 +111,18 @@ module.exports = class TestRunner
 
 		    testClass.name = path + ' -> ' + name;
 
-		    try {
+            try {
                 await testClass[name]();
-			} catch(error) {
-                console.error(chalk.red(`${figures.cross} jsUnit error`));
-                console.error(error);
-                process.exit(0);
-			}
+            } catch (error) {
+                if (error.message.startsWith('[vue-test-utils]')) {
+                    console.error(chalk.red(`  Vue utils error`));
+                    console.error(error);
+
+                    process.exit(0);
+                } else {
+                    throw error;
+                }
+            }
 		}
 	}
 
@@ -171,14 +183,17 @@ module.exports = class TestRunner
 
 	loadFilesFrom(path)
 	{
-		try {
-			if(this.fs.lstatSync(path).isDirectory() == false) {
-				return require(this.path(path));
-			}
+        try {
+            if(this.fs.lstatSync(path).isDirectory() == false) {
+                return require(this.path(path));
+            }
 		} catch (error) {
 			if (error instanceof Error && error.code === 'ENOENT') {
-				console.error(chalk.red(`${figures.cross} Directory [${path}] don't exists.`));
-			}
+				console.error(chalk.red(`  ${figures.cross} Directory [${path}] don't exists.`));
+			} else {
+                console.error(chalk.red(`  jsUnit error`));
+                console.error(error);
+            }
 
 			process.exit(0);
 		}
