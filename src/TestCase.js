@@ -66,9 +66,13 @@ module.exports = class TestCase
 		});
 	}
 
-	assertCount()
+	assertCount(expected, countable)
 	{
-		// ..
+		try {
+			this.assertEquals(Object.keys(countable).length, expected);
+		} catch (error) {
+			this.fail(`[${countable}] is not countable.`);
+		}
 	}
 
 	pass(message)

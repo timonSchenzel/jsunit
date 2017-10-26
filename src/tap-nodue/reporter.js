@@ -20,18 +20,19 @@ let testsOverview = '';
 let visualErrors = '';
 let noTestsFound = false;
 let startTime = new Date().getTime();
+let log = '';
 
 const reporter = () => {
   const onResults = (data) => {
     const time = timer()
 
     if (noTestsFound == false) {
-      output.write('  ' + chalk.dim(`Time: ${ms(time)}\n`));
+      log += '  ' + chalk.dim(`Time: ${ms(time)}\n`);
     }
 
-    output.write('  ' + testsOverview);
-    output.write("\n");
-    output.write(visualErrors);
+   log += '  ' + testsOverview;
+   log += "\n";
+   log += visualErrors;
 
     result.count = data.count
     result.errors = data.failures
@@ -41,11 +42,26 @@ const reporter = () => {
     }
 
     if (data.fail) {
-      output.write("\n");
-      output.write('  ' + chalk.green(data.pass + ' passed\n'));
-      output.write('  ' + chalk.red(data.fail + ' failed\n'));
+     log += "\n";
+     log += '  ' + chalk.green(data.pass + ' passed\n');
+     log += '  ' + chalk.red(data.fail + ' failed\n');
     } else {
-      output.write('  ' + chalk.green(data.pass + ' passed\n'));
+     log += '  ' + chalk.green(data.pass + ' passed\n');
+    }
+
+    output.write(log);
+
+    if (process.env.npm_lifecycle_event == 'test-reporting') {
+      if (
+        log.includes("\u001b[31m-\u001b[39m \u001b[94m\'\u001b[39m\u001b[34mHello \u001b[39m\u001b[41m\u001b[30mWorld\u001b[39m\u001b[49m\u001b[94m\'\u001b[39m\n\u001b[32m+\u001b[39m \u001b[94m\'\u001b[39m\u001b[34mHello \u001b[39m\u001b[42m\u001b[30mjsUnit\u001b[39m\u001b[49m\u001b[94m\'\u001b[39m")
+        && log.includes("  \u001b[90m[\u001b[39m\n\u001b[32m+\u001b[39m   \u001b[33m1\u001b[39m\u001b[90m,\u001b[39m\n\u001b[32m+\u001b[39m   \u001b[33m2\u001b[39m\u001b[90m,\u001b[39m\n    \u001b[33m3\u001b[39m\u001b[90m,\u001b[39m\n    \u001b[33m4\u001b[39m\u001b[90m,\u001b[39m\n\u001b[31m-\u001b[39m   \u001b[33m5\u001b[39m\u001b[90m,\u001b[39m\n  \u001b[90m]\u001b[39m")
+        && log.includes("  \u001b[90m{\u001b[39m\n    a: \u001b[33m1\u001b[39m\u001b[90m,\u001b[39m\n\u001b[31m-\u001b[39m   b: \u001b[33m3\u001b[39m\u001b[90m,\u001b[39m\n\u001b[32m+\u001b[39m   b: \u001b[33m2\u001b[39m\u001b[90m,\u001b[39m\n\u001b[31m-\u001b[39m   d: \u001b[33m4\u001b[39m\u001b[90m,\u001b[39m\n\u001b[32m+\u001b[39m   c: \u001b[33m3\u001b[39m\u001b[90m,\u001b[39m\n  \u001b[90m}\u001b[39m")
+        && log.includes('[null] is not countable')
+      ) {
+        console.log('\n  Reporting ' + chalk.green('OK'));
+      } else {
+        console.log('\n  Reporting ' + chalk.red('ERROR'));
+      }
     }
   }
 

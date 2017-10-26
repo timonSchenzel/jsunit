@@ -8,7 +8,8 @@
     },
     "scripts": {
         "test": "node node_modules/ava/cli.js src/jsunit.js --colors --tap | tap-nodue || true",
-        "tests": "node node_modules/ava/cli.js src/jsunit.js --colors --tap | tap-nodue || true"
+        "tests": "node node_modules/ava/cli.js src/jsunit.js --colors --tap | tap-nodue || true",
+        "test-reporting": "node node_modules/ava/cli.js src/jsunit.js --colors --tap | tap-nodue || true"
     },
     "dependencies": {
         "auto-loader": "^0.2.0",
