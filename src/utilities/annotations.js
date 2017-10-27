@@ -7,20 +7,21 @@ exports.getSync = getSync;
 
 // Define line type patterns and their identifiers
 var linetypes = {
-  dbannotest  : { pattern: /\/\*+?\s*@?test\s*\*\//, returns: { name:1 } },
-  dbstart     : { pattern: /^\s?\/\*\*/ },
-  dbanno      : { pattern: /^\s*\*\s*@?([\w:-_\(\)]+)(\s*(.*))?/, returns: { name:1, value:3 } },
-  dbend       : { pattern: /^\s?\*\/$/ },
-  fnsig1      : { pattern: /^\s?function\s+(\w+)\s?/, returns: { name:1 } },
-  fnsig2      : { pattern: /^\s?exports\.(\w+)\s?=\s?function/, returns: { name:1 } },
-  fnsig3      : { pattern: /^\s?module\.exports\s?=\s?function/, returns: { name:'anonymous' } },
-  fnsig4      : { pattern: /exports\[['"](\w+)['"]\]\s*=\s*function/, returns: { name:1 } },
-  fnsig5      : { pattern: /^\s*(var|let|const)\s+(\w+)\s*=\s*function/, returns: { name:2 } },
-  fnsig6      : { pattern: /^\s*(var|let|const)\s+(\w+)\s*=\s*new Function/, returns: { name:2 } },
-  fnsig7      : { pattern: /^\s*(var|let|const)\s+(\w+)\s*=\s*\(.*?\)\s*=>/, returns: { name:2 } },
-  fnsig8      : { pattern: /^\s?module.exports\s*=\s*{/, returns: { name:'module' } },
-  es6asyncfn  : { pattern: /async\s(\w+)\s?/, returns: { name:1 } },
-  es6fn       : { pattern: /\s?(\w+)\s?/, returns: { name:1 } },
+  dbannotest          : { pattern: /\/\*+?\s*@?test\s*\*\//, returns: { name:1 } },
+  dbannoreportingtest : { pattern: /\/\*+?\s*@?reporting-test\s*\*\//, returns: { name:1 } },
+  dbstart             : { pattern: /^\s?\/\*\*/ },
+  dbanno              : { pattern: /^\s*\*\s*@?([\w:-_\(\)]+)(\s*(.*))?/, returns: { name:1, value:3 } },
+  dbend               : { pattern: /^\s?\*\/$/ },
+  fnsig1              : { pattern: /^\s?function\s+(\w+)\s?/, returns: { name:1 } },
+  fnsig2              : { pattern: /^\s?exports\.(\w+)\s?=\s?function/, returns: { name:1 } },
+  fnsig3              : { pattern: /^\s?module\.exports\s?=\s?function/, returns: { name:'anonymous' } },
+  fnsig4              : { pattern: /exports\[['"](\w+)['"]\]\s*=\s*function/, returns: { name:1 } },
+  fnsig5              : { pattern: /^\s*(var|let|const)\s+(\w+)\s*=\s*function/, returns: { name:2 } },
+  fnsig6              : { pattern: /^\s*(var|let|const)\s+(\w+)\s*=\s*new Function/, returns: { name:2 } },
+  fnsig7              : { pattern: /^\s*(var|let|const)\s+(\w+)\s*=\s*\(.*?\)\s*=>/, returns: { name:2 } },
+  fnsig8              : { pattern: /^\s?module.exports\s*=\s*{/, returns: { name:'module' } },
+  es6asyncfn          : { pattern: /async\s(\w+)\s?/, returns: { name:1 } },
+  es6fn               : { pattern: /\s?(\w+)\s?/, returns: { name:1 } },
 };
 
 function trim(str) {
@@ -77,6 +78,10 @@ function analyze(data) {
     switch (type.id) {
       case 'dbannotest':
         current['test'] = true;
+        break;
+
+      case 'dbannoreportingtest':
+        current['reporting-test'] = true;
         break;
 
       case 'dbstart':

@@ -1,24 +1,29 @@
 module.exports = class BasicTest extends TestCase
 {
+    test_without_annotation()
+    {
+        this.assertFalse(false);
+    }
+
 	/** @test */
 	it_is_able_to_assert_true()
 	{
 		this.assertTrue(true);
 	}
 
-    /** @test */
+    /** @reporting-test */
     it_is_able_to_assert_equals_with_strings()
     {
         this.assertEquals('Hello jsUnit', 'Hello World');
     }
 
-    /** @test */
+    /** @reporting-test */
     it_is_able_to_assert_equals_with_arrays()
     {
         this.assertEquals([1, 2, 3, 4], [3, 4, 5]);
     }
 
-    /** @test */
+    /** @reporting-test */
     it_is_able_to_assert_equals_with_objects()
     {
         this.assertEquals({a: 1, b: 2, c: 3}, {a: 1, b: 3, d: 4});
@@ -40,7 +45,7 @@ module.exports = class BasicTest extends TestCase
         this.assertCount(2, object);
     }
 
-    /** @test */
+    /** @reporting-test */
     it_is_able_to_check_if_given_value_is_countable_when_assert_the_count()
     {
         let notCountable = null;

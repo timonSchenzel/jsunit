@@ -24,9 +24,16 @@ module.exports = class TestRunner
 
 		this.rawFilter = processData.env.npm_lifecycle_script;
 
-		this.filter = this.parseFilter(this.rawFilter);
+        this.filter = this.parseFilter(this.rawFilter);
 
 		this.loadConfig();
+
+        this.annotationFilter = 'test';
+
+        if (this.filter && this.filter.startsWith('@')) {
+            this.annotationFilter = this.filter.replace('@', '');
+            this.filter = '';
+        }
 	}
 
 	loadConfig()
@@ -86,23 +93,19 @@ module.exports = class TestRunner
 		let annotations = this.annotations.getSync(this.path(`${location}/${path}.js`));
 
         for (let name of Object.getOwnPropertyNames(Object.getPrototypeOf(testClass))) {
-			let hasTestAnnotation = false;
+			let hasCorrectAnnotation = false;
 		    let method = testClass[name];
 
 		    if (typeof annotations[name] == 'object') {
-		    	hasTestAnnotation = annotations[name].test === true;
-			}
+                hasCorrectAnnotation = annotations[name][this.annotationFilter] === true;
+            }
 
 		    // Default filters:
 		    // 1. Skip constructor
-		    // 2. Only call methods with a 'test' prefix or a 'test' annotation
-
-		    /**
-		     * @todo fix for async methods
-		     */
-		    if ( ! method instanceof Function || method === testClass || name == 'constructor' || (! name.startsWith('test') && ! hasTestAnnotation)) {
-		    	continue;
-		    }
+		    // 2. Only call methods with a 'test' prefix or a correct annotation, by default this will be 'test'
+            if ( ! method instanceof Function || method === testClass || name == 'constructor' || (! name.startsWith('test') && ! hasCorrectAnnotation)) {
+                continue;
+            }
 
 		    // Apply cli filter
 		    if (this.filter && name != this.filter && testClass.constructor.name != this.filter) {

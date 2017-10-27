@@ -51,12 +51,18 @@ const reporter = () => {
 
     output.write(log);
 
-    if (process.env.npm_lifecycle_event == 'test-reporting') {
+    if (process.env.npm_lifecycle_event == 'reporting-tests') {
       if (
-        log.includes("\u001b[31m-\u001b[39m \u001b[94m\'\u001b[39m\u001b[34mHello \u001b[39m\u001b[41m\u001b[30mWorld\u001b[39m\u001b[49m\u001b[94m\'\u001b[39m\n\u001b[32m+\u001b[39m \u001b[94m\'\u001b[39m\u001b[34mHello \u001b[39m\u001b[42m\u001b[30mjsUnit\u001b[39m\u001b[49m\u001b[94m\'\u001b[39m")
-        && log.includes("  \u001b[90m[\u001b[39m\n\u001b[32m+\u001b[39m   \u001b[33m1\u001b[39m\u001b[90m,\u001b[39m\n\u001b[32m+\u001b[39m   \u001b[33m2\u001b[39m\u001b[90m,\u001b[39m\n    \u001b[33m3\u001b[39m\u001b[90m,\u001b[39m\n    \u001b[33m4\u001b[39m\u001b[90m,\u001b[39m\n\u001b[31m-\u001b[39m   \u001b[33m5\u001b[39m\u001b[90m,\u001b[39m\n  \u001b[90m]\u001b[39m")
-        && log.includes("  \u001b[90m{\u001b[39m\n    a: \u001b[33m1\u001b[39m\u001b[90m,\u001b[39m\n\u001b[31m-\u001b[39m   b: \u001b[33m3\u001b[39m\u001b[90m,\u001b[39m\n\u001b[32m+\u001b[39m   b: \u001b[33m2\u001b[39m\u001b[90m,\u001b[39m\n\u001b[31m-\u001b[39m   d: \u001b[33m4\u001b[39m\u001b[90m,\u001b[39m\n\u001b[32m+\u001b[39m   c: \u001b[33m3\u001b[39m\u001b[90m,\u001b[39m\n  \u001b[90m}\u001b[39m")
-        && log.includes('[null] is not countable')
+        (
+          log.includes("\u001b[31m-\u001b[39m \u001b[94m\'\u001b[39m\u001b[34mHello \u001b[39m\u001b[41m\u001b[30mWorld\u001b[39m\u001b[49m\u001b[94m\'\u001b[39m\n\u001b[32m+\u001b[39m \u001b[94m\'\u001b[39m\u001b[34mHello \u001b[39m\u001b[42m\u001b[30mjsUnit\u001b[39m\u001b[49m\u001b[94m\'\u001b[39m") ||
+          log.includes("\u001b[31m-\u001b[39m \u001b[34m\'\u001b[39m\u001b[34mHello \u001b[39m\u001b[41m\u001b[30mWorld\u001b[39m\u001b[49m\u001b[34m\'\u001b[39m\n\u001b[32m+\u001b[39m \u001b[34m\'\u001b[39m\u001b[34mHello \u001b[39m\u001b[42m\u001b[30mjsUnit\u001b[39m\u001b[49m\u001b[34m\'\u001b[39m")
+        )
+        &&
+        log.includes("  \u001b[90m[\u001b[39m\n\u001b[32m+\u001b[39m   \u001b[33m1\u001b[39m\u001b[90m,\u001b[39m\n\u001b[32m+\u001b[39m   \u001b[33m2\u001b[39m\u001b[90m,\u001b[39m\n    \u001b[33m3\u001b[39m\u001b[90m,\u001b[39m\n    \u001b[33m4\u001b[39m\u001b[90m,\u001b[39m\n\u001b[31m-\u001b[39m   \u001b[33m5\u001b[39m\u001b[90m,\u001b[39m\n  \u001b[90m]\u001b[39m")
+        &&
+        log.includes("  \u001b[90m{\u001b[39m\n    a: \u001b[33m1\u001b[39m\u001b[90m,\u001b[39m\n\u001b[31m-\u001b[39m   b: \u001b[33m3\u001b[39m\u001b[90m,\u001b[39m\n\u001b[32m+\u001b[39m   b: \u001b[33m2\u001b[39m\u001b[90m,\u001b[39m\n\u001b[31m-\u001b[39m   d: \u001b[33m4\u001b[39m\u001b[90m,\u001b[39m\n\u001b[32m+\u001b[39m   c: \u001b[33m3\u001b[39m\u001b[90m,\u001b[39m\n  \u001b[90m}\u001b[39m")
+        &&
+        log.includes('[null] is not countable')
       ) {
         console.log('\n  Reporting ' + chalk.green('OK'));
       } else {
@@ -138,6 +144,8 @@ const reporter = () => {
           const actualDescriptor = concordance.describe(raw.actual, concordanceOptions);
           const expectedDescriptor = concordance.describe(raw.expected, concordanceOptions);
           let diff = formatDescriptorDiff(actualDescriptor, expectedDescriptor);
+
+          console.log([diff.formatted]);
 
           visualErrors += '\n' + diff.formatted + '\n';
         } else {
