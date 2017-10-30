@@ -51,7 +51,18 @@ const reporter = () => {
 
     output.write(log);
 
-    if (process.env.npm_lifecycle_event == 'reporting-tests') {
+    let runAsReportingTest = false;
+
+    if (process.env.npm_config_argv) {
+      let cliArguments = JSON.parse(process.env.npm_config_argv);
+      if (cliArguments.remain && cliArguments.remain[0]) {
+        if (cliArguments.remain[0] == '@reporting-test') {
+          runAsReportingTest = true;
+        }
+      }
+    }
+
+    if (runAsReportingTest) {
       if (
         (
           log.includes("\u001b[31m-\u001b[39m \u001b[94m\'\u001b[39m\u001b[34mHello \u001b[39m\u001b[41m\u001b[30mWorld\u001b[39m\u001b[49m\u001b[94m\'\u001b[39m\n\u001b[32m+\u001b[39m \u001b[94m\'\u001b[39m\u001b[34mHello \u001b[39m\u001b[42m\u001b[30mjsUnit\u001b[39m\u001b[49m\u001b[94m\'\u001b[39m") ||
