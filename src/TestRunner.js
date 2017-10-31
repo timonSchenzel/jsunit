@@ -91,6 +91,7 @@ module.exports = class TestRunner
 	async runTestsInClass(testClass, path, location)
 	{
 		let annotations = this.annotations.getSync(this.path(`${location}/${path}.js`));
+        let invokeSetUp = false;
 
         for (let name of Object.getOwnPropertyNames(Object.getPrototypeOf(testClass))) {
 			let hasCorrectAnnotation = false;
@@ -107,10 +108,24 @@ module.exports = class TestRunner
                 continue;
             }
 
+            // If a custom annotation filter is specified,
+            // only run tests with that specific annotation.
+            // This will skip tests with prefix 'test'.
+            if (this.annotationFilter != 'test' && ! hasCorrectAnnotation) {
+                continue;
+            }
+
 		    // Apply cli filter
 		    if (this.filter && name != this.filter && testClass.constructor.name != this.filter) {
 		    	continue;
 		    }
+
+            // Invoke setUp method if exists
+            if (typeof testClass['setUp'] == 'function' && ! invokeSetUp) {
+                invokeSetUp = true;
+                testClass.name = path + ' -> ' + 'setUp';
+                testClass['setUp']();
+            }
 
 		    testClass.name = path + ' -> ' + name;
 
@@ -127,6 +142,12 @@ module.exports = class TestRunner
                 }
             }
 		}
+
+        // Invoke tearDown method
+        if (typeof testClass['tearDown'] == 'function') {
+            testClass.name = path + ' -> ' + 'tearDown';
+            testClass['tearDown']();
+        }
 	}
 
 	async runTestsInLocation(location)

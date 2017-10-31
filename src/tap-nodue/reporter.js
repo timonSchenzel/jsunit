@@ -49,8 +49,6 @@ const reporter = () => {
      log += '  ' + chalk.green(data.pass + ' passed\n');
     }
 
-    output.write(log);
-
     let runAsReportingTest = false;
 
     if (process.env.npm_config_argv) {
@@ -60,6 +58,10 @@ const reporter = () => {
           runAsReportingTest = true;
         }
       }
+    }
+
+    if (! runAsReportingTest) {
+      output.write(log);
     }
 
     if (runAsReportingTest) {
@@ -75,9 +77,9 @@ const reporter = () => {
         &&
         log.includes('[null] is not countable')
       ) {
-        console.log('\n  Reporting ' + chalk.green('OK'));
+        output.write('\n  Reporting ' + chalk.green('OK') + '\n');
       } else {
-        console.log('\n  Reporting ' + chalk.red('ERROR'));
+        output.write('\n  Reporting ' + chalk.red('ERROR') + '\n');
       }
     }
   }
@@ -156,8 +158,6 @@ const reporter = () => {
           const expectedDescriptor = concordance.describe(raw.expected, concordanceOptions);
           let diff = formatDescriptorDiff(actualDescriptor, expectedDescriptor);
 
-          console.log([diff.formatted]);
-
           visualErrors += '\n' + diff.formatted + '\n';
         } else {
           try {
@@ -166,8 +166,8 @@ const reporter = () => {
             parsedValue = diffValue;
           }
 
-        let values = formatWithLabel('', parsedValue);
-        visualErrors += '\n  ' + values.formatted + '\n';
+          let values = formatWithLabel('', parsedValue);
+          visualErrors += '\n  ' + values.formatted + '\n';
         }
       };
 

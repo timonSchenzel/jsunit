@@ -1,5 +1,23 @@
 module.exports = class BasicTest extends TestCase
 {
+    constructor()
+    {
+        super();
+
+        this.setUpMethodIsHit = false;
+    }
+
+    setUp()
+    {
+        this.setUpMethodIsHit = true;
+    }
+
+    /** @test */
+    it_will_call_the_set_up_method_if_exists()
+    {
+        this.assertTrue(this.setUpMethodIsHit);
+    }
+
     test_without_annotation()
     {
         this.assertFalse(false);
