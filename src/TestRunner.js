@@ -92,6 +92,7 @@ module.exports = class TestRunner
 	{
 		let annotations = this.annotations.getSync(this.path(`${location}/${path}.js`));
         let invokeSetUp = false;
+        let testClassMethodIsHit = false;
 
         for (let name of Object.getOwnPropertyNames(Object.getPrototypeOf(testClass))) {
 			let hasCorrectAnnotation = false;
@@ -120,6 +121,8 @@ module.exports = class TestRunner
 		    	continue;
 		    }
 
+            testClassMethodIsHit = true;
+
             // Invoke setUp method if exists
             if (typeof testClass['setUp'] == 'function' && ! invokeSetUp) {
                 invokeSetUp = true;
@@ -131,6 +134,7 @@ module.exports = class TestRunner
 
             try {
                 await testClass[name]();
+                testClass['cleanupAfterSingleTestMethod']();
             } catch (error) {
                 if (error.message.startsWith('[vue-test-utils]')) {
                     console.error(chalk.red(`  Vue utils error`));
@@ -138,13 +142,27 @@ module.exports = class TestRunner
 
                     process.exit(0);
                 } else {
-                    throw error;
+                    if ((testClass.expectedException && testClass.expectedException.name) || (testClass.notExpectedException && testClass.notExpectedException.name)) {
+                        if (testClass.expectedException && testClass.expectedException.name) {
+                            test(testClass.visualError(error.stack, testClass.name), t => {
+                                t.is(testClass.expectedException.name, error.name, `Assert that exception [${testClass.expectedException.name}] was thrown, but is was not.`);
+                            });
+                        }
+
+                        if(testClass.notExpectedException && testClass.notExpectedException.name) {
+                            test(testClass.visualError(error.stack, testClass.name), t => {
+                                t.not(testClass.notExpectedException.name, error.name, `Assert that exception [${testClass.notExpectedException.name}] was not thrown, but is was.`);
+                            });
+                        }
+                    } else {
+                        throw error;
+                    }
                 }
             }
 		}
 
         // Invoke tearDown method
-        if (typeof testClass['tearDown'] == 'function') {
+        if (typeof testClass['tearDown'] == 'function' && testClassMethodIsHit) {
             testClass.name = path + ' -> ' + 'tearDown';
             testClass['tearDown']();
         }

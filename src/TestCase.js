@@ -4,25 +4,23 @@ module.exports = class TestCase
 	{
 		this.vm = null;
 		this.name = null;
+
+		this.cleanupAfterSingleTestMethod();
 	}
 
-	assertEquals(expected, value, message)
+	pass(message)
 	{
-		value = this.normalizeValue(value);
-
-		// .is(value, expected, [message])
+		// .pass([message])
 		test(this.visualError(), async t => {
-			await t.deepEqual(value, expected, message);
+			await t.pass(message);
 		});
 	}
 
-	assertNotEquals(expected, value, message)
+	fail(message)
 	{
-		value = this.normalizeValue(value);
-
-		// .not(value, expected, [message])
+		// .fail([message])
 		test(this.visualError(), async t => {
-			await t.not(value, expected, message);
+			await t.fail(message);
 		});
 	}
 
@@ -66,6 +64,16 @@ module.exports = class TestCase
 		});
 	}
 
+	assertEquals(expected, value, message)
+	{
+		this.assertDeepEqual(expected, value, message);
+	}
+
+	assertNotEquals(expected, value, message)
+	{
+		this.assertNotDeepEqual(expected, value, message);
+	}
+
 	assertCount(expected, countable)
 	{
 		try {
@@ -75,37 +83,32 @@ module.exports = class TestCase
 		}
 	}
 
-	pass(message)
+	expectException(exception, message = null)
 	{
-		// .pass([message])
-		test(this.visualError(), async t => {
-			await t.pass(message);
-		});
+		this.expectedException = exception;
+		this.expectedExceptionMessage = message;
 	}
 
-	fail(message)
+	// expectException(func, error, message)
+	// {
+	// 	// .throws(function|promise, [error, [message]])
+	// 	test(this.visualError(), async t => {
+	// 		await t.throws(func, error, message);
+	// 	});
+	// }
+
+	notExpectException(exception)
 	{
-		// .fail([message])
-		test(this.visualError(), async t => {
-			await t.fail(message);
-		});
+		this.notExpectedException = exception;
 	}
 
-	expectException(func, error, message)
-	{
-		// .throws(function|promise, [error, [message]])
-		test(this.visualError(), async t => {
-			await t.throws(func, error, message);
-		});
-	}
-
-	notExpectException(func, error, message)
-	{
-		// .notThrows(function|promise, [message])
-		test(this.visualError(), async t => {
-			await t.notThrows(func, error, message);
-		});
-	}
+	// notExpectException(func, error, message)
+	// {
+	// 	// .notThrows(function|promise, [message])
+	// 	test(this.visualError(), async t => {
+	// 		await t.notThrows(func, error, message);
+	// 	});
+	// }
 
 	assertRegExp(regex, contents, message)
 	{
@@ -129,6 +132,16 @@ module.exports = class TestCase
 		test(this.visualError(), async t => {
 			await t.notRegex(contents, regex, message);
 		});
+	}
+
+	assertContains(regex, contents, message)
+	{
+		this.assertRegExp(regex, contents, message);
+	}
+
+	assertNotContains(regex, contents, message)
+	{
+		this.assertNotRegExp(regex, contents, message);
 	}
 
 	takeSnapshot(contents, message)
@@ -235,5 +248,12 @@ module.exports = class TestCase
 			.join('\n');
 
 		return name + ' at ' + sourceInput.file + ':' + sourceInput.line;
+	}
+
+	cleanupAfterSingleTestMethod()
+	{
+		this.expectedException = null;
+		this.expectedExceptionMessage = null;
+		this.notExpectedException = null;
 	}
 }
