@@ -89,26 +89,26 @@ module.exports = class TestCase
 		this.expectedExceptionMessage = message;
 	}
 
-	// expectException(func, error, message)
-	// {
-	// 	// .throws(function|promise, [error, [message]])
-	// 	test(this.visualError(), async t => {
-	// 		await t.throws(func, error, message);
-	// 	});
-	// }
+	expectThrows(func, error, message)
+	{
+		// .throws(function|promise, [error, [message]])
+		test(this.visualError(), async t => {
+			await t.throws(func, error, message);
+		});
+	}
 
 	notExpectException(exception)
 	{
 		this.notExpectedException = exception;
 	}
 
-	// notExpectException(func, error, message)
-	// {
-	// 	// .notThrows(function|promise, [message])
-	// 	test(this.visualError(), async t => {
-	// 		await t.notThrows(func, error, message);
-	// 	});
-	// }
+	notExpectThrows(func, error, message)
+	{
+		// .notThrows(function|promise, [message])
+		test(this.visualError(), async t => {
+			await t.notThrows(func, error, message);
+		});
+	}
 
 	assertRegExp(regex, contents, message)
 	{

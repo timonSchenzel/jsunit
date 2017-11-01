@@ -142,22 +142,28 @@ module.exports = class TestRunner
 
                     process.exit(0);
                 } else {
-                    if ((testClass.expectedException && testClass.expectedException.name) || (testClass.notExpectedException && testClass.notExpectedException.name)) {
-                        if (testClass.expectedException && testClass.expectedException.name) {
+                	let expectedException = testClass.expectedException;
+                	let expectedExceptionMessage = testClass.expectedExceptionMessage;
+                	let notExpectedException = testClass.notExpectedException;
+
+                    if ((expectedException && expectedException.name) || (notExpectedException && notExpectedException.name)) {
+                        if (expectedException && expectedException.name) {
                             test(testClass.visualError(error.stack, testClass.name), t => {
-                                t.is(testClass.expectedException.name, error.name, `Assert that exception [${testClass.expectedException.name}] was thrown, but is was not.`);
+                                t.is(expectedException.name, error.name, `Assert that exception [${expectedException.name}] was thrown, but is was not.`);
                             });
                         }
 
-                        if(testClass.notExpectedException && testClass.notExpectedException.name) {
+                        if(notExpectedException && notExpectedException.name) {
                             test(testClass.visualError(error.stack, testClass.name), t => {
-                                t.not(testClass.notExpectedException.name, error.name, `Assert that exception [${testClass.notExpectedException.name}] was not thrown, but is was.`);
+                                t.not(notExpectedException.name, error.name, `Assert that exception [${notExpectedException.name}] was not thrown, but is was.`);
                             });
                         }
                     } else {
                         throw error;
                     }
                 }
+
+                testClass['cleanupAfterSingleTestMethod']();
             }
 		}
 
