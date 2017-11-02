@@ -8,6 +8,13 @@ module.exports = class TestCase
 		this.cleanupAfterSingleTestMethod();
 	}
 
+	async asyncTest(callable)
+	{
+		await test(async t => {
+			await callable(t);
+		});
+	}
+
 	pass(message)
 	{
 		// .pass([message])

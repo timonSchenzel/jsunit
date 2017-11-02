@@ -13,7 +13,7 @@ module.exports = class SetUpTest extends TestCase
     }
 
     /** @test */
-    it_will_call_the_set_up_method_if_exists()
+    async it_will_call_the_set_up_method_if_exists()
     {
         this.assertTrue(this.setUpMethodIsHit);
     }
