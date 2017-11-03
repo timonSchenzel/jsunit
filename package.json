@@ -1,5 +1,6 @@
 {
     "name": "JSUnit",
+    "version": "0.0.1",
     "author": "Timon Schenzel",
     "license": "MIT",
     "private": true,
