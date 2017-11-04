@@ -1,5 +1,6 @@
 {
 	"bootstrap": "bootstrap",
+	"vue": "Vue",
 	"files": [
 		"tests"
 	]

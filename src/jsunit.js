@@ -36,35 +36,6 @@ global.figures = require('figures');
 global.TestCase = require('./TestCase');
 
 /**
- * Load VueComponentTestCase class.
- *
- * @type {Object}
- */
-global.VueComponentTestCase = require('./VueComponentTestCase');
-
-/**
- * Load VueComponentTester class.
- *
- * @type {Object}
- */
-global.VueComponentTester = require('./VueComponentTester');
-
-/**
- * Load VueTestUtils class.
- *
- * @type {Object}
- */
-global.vueTestUtils = require('vue-test-utils');
-
-/**
- * Load Vue.
- *
- * @type {Object}
- */
-global.Vue = require('Vue');
-Vue.config.productionTip = false;
-
-/**
  * Load chalk package, terminal/cmd string styling done right.
  *
  * @type {Object}

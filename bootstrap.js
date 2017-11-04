@@ -1,3 +1,5 @@
+window.Vue = require('vue');
+
 Vue.component('hello-world', {
     template: `
         <div :class="color">

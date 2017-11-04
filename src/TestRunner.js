@@ -56,6 +56,40 @@ module.exports = class TestRunner
 
 	boot()
 	{
+        // Load vue specific stuff
+        /**
+         * Load VueComponentTestCase class.
+         *
+         * @type {Object}
+         */
+        global.VueComponentTestCase = require('./VueComponentTestCase');
+
+        /**
+         * Load VueComponentTester class.
+         *
+         * @type {Object}
+         */
+        global.VueComponentTester = require('./VueComponentTester');
+
+        /**
+         * Load VueTestUtils class.
+         *
+         * @type {Object}
+         */
+        global.vueTestUtils = require('vue-test-utils');
+
+        /**
+         * Load Vue.
+         *
+         * @type {Object}
+         */
+        global.Vue = global[this.config.vue] = require('vue');
+
+        Vue.config.productionTip = false;
+        Vue.config.debug = false;
+        Vue.config.silent = true;
+        Vue.config.devtools = false;
+
 		try {
 			if (this.config.bootstrap) {
 				require(this.path(this.config.bootstrap));
