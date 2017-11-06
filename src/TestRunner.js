@@ -2,7 +2,7 @@ module.exports = class TestRunner
 {
 	constructor(processData)
 	{
-		this.configFile = 'jsunit.json';
+		this.configFile = 'jsunit.js';
 
 		this.fs = require('fs');
 
@@ -39,7 +39,7 @@ module.exports = class TestRunner
 	loadConfig()
 	{
 		if (this.fs.existsSync(this.configFile)) {
-			this.config = JSON.parse(this.fs.readFileSync(this.configFile, 'utf8'));
+			this.config = require(this.root + this.configFile);
 		}
 	}
 
@@ -83,7 +83,14 @@ module.exports = class TestRunner
          *
          * @type {Object}
          */
-        global.Vue = global[this.config.vue] = require('vue');
+        if (! this.config.vue.require) {
+            this.config.vue.require = () => {
+                require('vue');
+            }
+        }
+
+
+        global.Vue = global[this.config.vue] = this.config.vue.require();
 
         Vue.config.productionTip = false;
         Vue.config.debug = false;
