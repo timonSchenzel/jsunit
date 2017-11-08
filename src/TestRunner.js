@@ -40,7 +40,9 @@ module.exports = class TestRunner
 	{
 		if (this.fs.existsSync(this.configFile)) {
 			this.config = require(this.root + this.configFile);
-		}
+		} else {
+            this.config = require('./defaultConfig');
+        }
 	}
 
 	parseFilter(rawFilter = '')
@@ -88,7 +90,6 @@ module.exports = class TestRunner
                 require('vue');
             }
         }
-
 
         global.Vue = global[this.config.vue] = this.config.vue.require();
 
