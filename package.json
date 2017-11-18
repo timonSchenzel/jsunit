@@ -8,8 +8,8 @@
         "tap-nodue": "./src/tap-nodue/tap-nodue.js"
     },
     "scripts": {
-        "test": "node node_modules/ava/cli.js src/jsunit.js --colors --tap | tap-nodue || true",
-        "tests": "node node_modules/ava/cli.js src/jsunit.js --colors --tap | tap-nodue || true",
+        "test": "node src/ava/runner.js src/jsunit.js --colors --tap | tap-nodue || true",
+        "tests": "node src/ava/runner.js src/jsunit.js --colors --tap | tap-nodue || true",
         "reporting-tests": "npm run tests @reporting-test",
         "all-tests": "npm run tests && npm run reporting-tests"
     },
