@@ -9,9 +9,8 @@
     },
     "scripts": {
         "test": "node src/ava/runner.js src/jsunit.js --colors --tap | tap-nodue || true",
-        "tests": "node src/ava/runner.js src/jsunit.js --colors --tap | tap-nodue || true",
-        "reporting-tests": "npm run tests @reporting-test",
-        "all-tests": "npm run tests && npm run reporting-tests"
+        "reporting-tests": "npm run test @reporting-test",
+        "all-tests": "npm run test && npm run reporting-tests"
     },
     "dependencies": {
         "auto-loader": "^0.2.0",
