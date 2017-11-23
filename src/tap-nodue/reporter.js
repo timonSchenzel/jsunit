@@ -30,6 +30,7 @@ const reporter = () => {
       log += '  ' + chalk.dim(`Time: ${ms(time)}\n`);
     }
 
+
    log += '  ' + testsOverview;
    log += "\n";
    log += visualErrors;
@@ -38,6 +39,7 @@ const reporter = () => {
     result.errors = data.failures
 
     if (noTestsFound) {
+      output.write(log);
       return;
     }
 
@@ -92,21 +94,21 @@ const reporter = () => {
   input.on('assert', (assert) => {
     // console.log(assert);
 
-    if (assert.name.includes('No tests found')) {
+    if (assert.name.includes('No tests found in')) {
       testsOverview += chalk['yellow']('No tests found.');
       noTestsFound = true;
-      return
+      return;
     }
 
     if (assert.name.includes('Test results were not received from')) {
       testsOverview += chalk['yellow']('No tests executed.');
       noTestsFound = true;
-      return
+      return;
     }
 
     if (assert.ok) {
       testsOverview += chalk['green']('.');
-      return
+      return;
     }
 
     testsOverview += chalk['red']('x');
