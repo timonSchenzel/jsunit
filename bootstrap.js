@@ -32,3 +32,14 @@ Vue.component('hello-world', {
         }
     }
 });
+
+Vue.component('example', {
+    template: `
+        <div>
+            <slot></slot>
+        </div>`,
+
+    methods: {
+
+    }
+});

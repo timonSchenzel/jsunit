@@ -5,9 +5,14 @@ module.exports = class VueComponentTester
         this.template = template;
         this.html = null;
         this.props = {};
+        this.config = {};
+        this.slots = {};
         this.tester = testCaseInstance;
         this.tagName = template.match(/<([^\s>]+)(\s|>)+/)[1];
         this.rawProps = template.match(/\s([^\>]+)(|>)+/);
+        let slotRegex = `'/<${this.tagName}>(.*?)<\/${this.tagName}>/'`;
+        this.rawSlot = template.match(slotRegex);
+        console.log(this.rawSlot);
 
         if (this.rawProps && this.rawProps[1]) {
             this.rawProps = this.rawProps[1];
@@ -24,13 +29,14 @@ module.exports = class VueComponentTester
 
         let testComponent = this.component.sealedOptions;
 
-        // this.vm = new Vue(testComponent);
-        this.wrapper = vueTestUtils.mount(testComponent);
+        this.config = {
+            slots: this.slots,
+        };
+
+        this.wrapper = vueTestUtils.mount(testComponent, this.config);
         this.vm = this.wrapper.vm;
 
-        for (var prop in this.props) {
-            this.vm._props[prop] = this.props[prop];
-        }
+        this.wrapper.setProps(this.props);
     }
 
     parseProps()
