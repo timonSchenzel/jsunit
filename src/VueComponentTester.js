@@ -9,10 +9,13 @@ module.exports = class VueComponentTester
         this.slots = {};
         this.tester = testCaseInstance;
         this.tagName = template.match(/<([^\s>]+)(\s|>)+/)[1];
-        this.rawProps = template.match(/\s([^\>]+)(|>)+/);
-        let slotRegex = `'/<${this.tagName}>(.*?)<\/${this.tagName}>/'`;
-        this.rawSlot = template.match(slotRegex);
-        console.log(this.rawSlot);
+        let propsRegex = new RegExp(`<${this.tagName}\s?([^\>]+)(|>)+`, 'igm');
+        this.rawProps = propsRegex.exec(template);
+        let slotRegex = new RegExp(`<${this.tagName}>(.*?)<\/${this.tagName}>`, 'igm');
+        this.rawSlot = slotRegex.exec(template);
+        if (this.rawSlot && this.rawSlot[1]) {
+            this.slots.default = this.rawSlot[1];
+        }
 
         if (this.rawProps && this.rawProps[1]) {
             this.rawProps = this.rawProps[1];

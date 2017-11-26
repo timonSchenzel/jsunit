@@ -3,8 +3,8 @@ module.exports = class HelloWorldTest extends VueComponentTestCase
     /** @test */
     it_is_able_render_the_example_component()
     {
-        let component = this.render('<example>Test</example>');
+        let component = this.render('<example><div>Test</div></example>');
 
-        console.log(component.toHtml());
+        this.assertEquals('<div><div>Test</div></div>', component.toHtml());
     }
 }
