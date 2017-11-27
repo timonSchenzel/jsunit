@@ -2,6 +2,7 @@ module.exports = class VueComponentTester
 {
     constructor(testCaseInstance, template)
     {
+        template = template.replace(/\r?\n?/g, '');
         this.template = template;
         this.html = null;
         this.props = {};
@@ -13,6 +14,7 @@ module.exports = class VueComponentTester
         this.rawProps = propsRegex.exec(template);
         let slotRegex = new RegExp(`<${this.tagName}>(.*?)<\/${this.tagName}>`, 'igm');
         this.rawSlot = slotRegex.exec(template);
+        console.log(this.rawSlot[1]);
         if (this.rawSlot && this.rawSlot[1]) {
             this.slots.default = this.rawSlot[1];
         }

@@ -33,13 +33,24 @@ Vue.component('hello-world', {
     }
 });
 
-Vue.component('example', {
+Vue.component('single-slot', {
     template: `
         <div>
             <slot></slot>
         </div>`,
+});
 
-    methods: {
-
-    }
+Vue.component('named-slot', {
+    template: `
+        <div>
+            <header>
+                <slot name="header"></slot>
+            </header>
+            <main>
+                <slot></slot>
+            </main>
+            <footer>
+                <slot name="footer"></slot>
+            </footer>
+        </div>`,
 });
