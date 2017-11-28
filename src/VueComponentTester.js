@@ -2,6 +2,8 @@ module.exports = class VueComponentTester
 {
     constructor(testCaseInstance, template)
     {
+        this.parsedTemplate = cheerio.load(template);
+
         template = template.replace(/\r?\n?/g, '');
         this.template = template;
         this.html = null;
@@ -10,21 +12,6 @@ module.exports = class VueComponentTester
         this.slots = {};
         this.tester = testCaseInstance;
         this.tagName = template.match(/<([^\s>]+)(\s|>)+/)[1];
-        let propsRegex = new RegExp(`<${this.tagName}\s?([^\>]+)(|>)+`, 'igm');
-        this.rawProps = propsRegex.exec(template);
-        let slotRegex = new RegExp(`<${this.tagName}>(.*?)<\/${this.tagName}>`, 'igm');
-        this.rawSlot = slotRegex.exec(template);
-        console.log(this.rawSlot[1]);
-        if (this.rawSlot && this.rawSlot[1]) {
-            this.slots.default = this.rawSlot[1];
-        }
-
-        if (this.rawProps && this.rawProps[1]) {
-            this.rawProps = this.rawProps[1];
-            this.props = this.parseProps();
-        } else {
-            this.rawProps = null;
-        }
 
         this.component = Vue.options.components[this.tagName];
 
@@ -33,6 +20,37 @@ module.exports = class VueComponentTester
         }
 
         let testComponent = this.component.sealedOptions;
+
+        this.defaultSlot = '';
+
+        this.parsedTemplate(this.tagName).children().each((index, element) => {
+            let tagName = element.tagName;
+            let child = cheerio(element);
+
+            if (child.attr('slot')) {
+                this.slots[child.attr('slot')] = `<${tagName}>${child.html()}</${tagName}>`;
+            } else {
+                this.defaultSlot += `<${tagName}>${child.html()}</${tagName}>`;
+            }
+        });
+
+        console.log(this.parsedTemplate('slot').parent());
+
+        if (this.defaultSlot) {
+            this.slots.default = `<main>${this.defaultSlot}</main>`;
+        }
+
+        console.log(this.slots);
+
+        let propsRegex = new RegExp(`<${this.tagName}\s?([^\>]+)(|>)+`, 'igm');
+        this.rawProps = propsRegex.exec(template);
+
+        if (this.rawProps && this.rawProps[1]) {
+            this.rawProps = this.rawProps[1];
+            this.props = this.parseProps();
+        } else {
+            this.rawProps = null;
+        }
 
         this.config = {
             slots: this.slots,

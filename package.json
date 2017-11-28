@@ -16,6 +16,7 @@
         "auto-loader": "^0.2.0",
         "ava": "^0.23.0",
         "chalk": "^2.3.0",
+        "cheerio": "^1.0.0-rc.2",
         "colors": "^1.1.2",
         "diff": "^3.4.0",
         "hirestime": "^3.1.1",

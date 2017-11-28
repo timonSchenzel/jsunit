@@ -29,6 +29,13 @@ global.test = require('ava');
 global.figures = require('figures');
 
 /**
+ * Load cheerio package, Fast, flexible, and lean implementation of core jQuery designed specifically for the server.
+ *
+ * @type {Object}
+ */
+global.cheerio = require('cheerio');
+
+/**
  * Load TestCase class.
  *
  * @type {Object}
