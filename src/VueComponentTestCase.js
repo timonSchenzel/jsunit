@@ -1,10 +1,11 @@
 module.exports = class VueComponentTestCase extends TestCase
 {
-    render(template)
+    render(template, props)
     {
         return new Proxy(VueComponentTester.test(
             this,
-            template
+            template,
+            props
         ), {
             get(target, property, receiver)
             {

@@ -1,29 +1,30 @@
 module.exports = class VueComponentTester
 {
-    constructor(testCaseInstance, template)
+    constructor(testCaseInstance, template, props = {})
     {
         this.parsedTemplate = cheerio.load(template);
 
         template = template.replace(/\r?\n?/g, '');
         this.template = template;
         this.html = null;
+        this.propsOverride = props;
         this.props = {};
         this.config = {};
         this.slots = {};
         this.tester = testCaseInstance;
-        this.tagName = template.match(/<([^\s>]+)(\s|>)+/)[1];
+        this.componentName = template.match(/<([^\s>]+)(\s|>)+/)[1];
 
-        this.component = Vue.options.components[this.tagName];
+        this.component = Vue.options.components[this.componentName];
 
         if (! this.component) {
-            throw new Error(`Component [${this.tagName}] don't exists.`);
+            throw new Error(`Component [${this.componentName}] don't exists.`);
         }
 
-        let testComponent = this.component.sealedOptions;
+        let testComponent = this.component;
 
         this.defaultSlot = '';
 
-        this.parsedTemplate(this.tagName).children().each((index, element) => {
+        this.parsedTemplate(this.componentName).children().each((index, element) => {
             let tagName = element.tagName;
             let child = cheerio(element);
 
@@ -34,15 +35,24 @@ module.exports = class VueComponentTester
             }
         });
 
-        console.log(this.parsedTemplate('slot').parent());
-
         if (this.defaultSlot) {
-            this.slots.default = `<main>${this.defaultSlot}</main>`;
+            let componentTemplate = cheerio.load(this.component.options.template);
+            let defaultSlotParentName = (componentTemplate('slot').not('[name]').parent()[0].name);
+
+            let cleanComponentTemplate = this.component.options.template.replace(/\s+/g, '');
+            let cleanSlotParentHtml = cheerio.html(componentTemplate('slot').not('[name]').parent()).replace(/\s+/g, '');
+
+            if (cleanSlotParentHtml != cleanComponentTemplate) {
+                componentTemplate('slot').not('[name]').parent().replaceWith('<slot></slot>');
+                this.component.options.template = componentTemplate('body').html();
+
+                this.slots.default = `<${defaultSlotParentName}>${this.defaultSlot}</${defaultSlotParentName}>`;
+            } else {
+                this.slots.default = this.defaultSlot;
+            }
         }
 
-        console.log(this.slots);
-
-        let propsRegex = new RegExp(`<${this.tagName}\s?([^\>]+)(|>)+`, 'igm');
+        let propsRegex = new RegExp(`<${this.componentName}\s?([^\>]+)(|>)+`, 'igm');
         this.rawProps = propsRegex.exec(template);
 
         if (this.rawProps && this.rawProps[1]) {
@@ -77,15 +87,20 @@ module.exports = class VueComponentTester
                 return;
             }
 
-            props[prop[0]] = prop[1].replace(/"/g, '');
+            if (prop[0].includes(':')) {
+                let propName = prop[0].replace(':', '');
+                props[propName] = this.propsOverride[propName];
+            } else {
+                props[prop[0]] = prop[1].replace(/"/g, '');
+            }
         });
 
         return props;
     }
 
-    static test(testCaseInstance, template)
+    static test(testCaseInstance, template, props)
     {
-        let tester = new this(testCaseInstance, template);
+        let tester = new this(testCaseInstance, template, props);
         return tester;
     }
 

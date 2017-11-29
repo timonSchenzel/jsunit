@@ -35,16 +35,4 @@ module.exports = class VueComponentTesterTest extends TestCase
             bar: 'baz',
         }, vueComponentTester.props);
     }
-
-    /** @test */
-    it_is_able_to_get_the_default_slot_content_when_exists()
-    {
-        let vueComponentTester = new VueComponentTester(
-            this,
-            `<example><p>Slot text</p></example>`);
-
-        this.assertEquals(
-            '<p>Slot text</p>',
-        vueComponentTester.slots.default);
-    }
 }

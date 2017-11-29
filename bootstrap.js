@@ -54,3 +54,29 @@ Vue.component('named-slot', {
             </footer>
         </div>`,
 });
+
+Vue.component('named-slot-with-nested-main-slot', {
+    template: `
+        <div>
+            <header>
+                <slot name="header"></slot>
+            </header>
+            <main>
+                <div>
+                    <slot></slot>
+                </div>
+            </main>
+            <footer>
+                <slot name="footer"></slot>
+            </footer>
+        </div>`,
+});
+
+Vue.component('todo-list', {
+    template: `
+        <ul>
+            <li v-for="item in items" v-text="item"></li>
+        </ul>`,
+
+    props: ['items'],
+});

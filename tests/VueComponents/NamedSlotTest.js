@@ -14,20 +14,6 @@ module.exports = class NamedSlotTest extends VueComponentTestCase
             </named-slot>
         `);
 
-        console.log(component.toHtml());
-
-        // this.assertEquals(`
-        //     <div>
-        //         <header>
-        //             <h1>Here might be a page title</h1>
-        //         </header>
-        //         <main>
-        //             <p>A paragraph for the main content.</p>
-        //         </main>
-        //         <footer>
-        //             <p>Here's some contact info</p>
-        //         </footer>
-        //     </div>
-        // `, component.toHtml());
+        this.assertEquals(`<div><header><h1>Here might be a page title</h1></header> <main><p>A paragraph for the main content.</p><p>Another one.</p></main> <footer><p>Here's some contact info</p></footer></div>`, component.toHtml());
     }
 }
