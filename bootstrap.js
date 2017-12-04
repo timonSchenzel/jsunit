@@ -81,9 +81,16 @@ Vue.component('todo-list', {
     props: ['items'],
 });
 
+Vue.component('menu-item', {
+    template: `
+        <li></li>`,
+});
+
 Vue.component('menu', {
     template: `
-        <menu-item v-for="item in items" v-text="item"></menu-item>`,
+        <ul>
+            <menu-item v-for="item in items" :key="item" v-text="item"></menu-item>
+        </ul>`,
 
     props: ['items'],
 });

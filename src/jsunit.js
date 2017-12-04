@@ -1,6 +1,3 @@
-Error.prepareStackTrace = null;
-global.traceback = require('./utilities/traceback');
-
 require('jsdom-global')();
 
 let startDate = new Date();
@@ -34,6 +31,13 @@ global.figures = require('figures');
  * @type {Object}
  */
 global.cheerio = require('cheerio');
+
+/**
+ * Load stack-trace package. Get v8 stack traces as an array of CallSite objects.
+ *
+ * @type {Object}
+ */
+global.stackTrace = require('stack-trace');
 
 /**
  * Load TestCase class.

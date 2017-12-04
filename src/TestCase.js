@@ -180,40 +180,44 @@ module.exports = class TestCase
 
 		const maxWidth = 80;
 
-		if (stack == null) {
-			stack = traceback();
-		}
+		let fileName = null;
+		let lineNumber = null;
 
 		if (name == null) {
 			name = this.name;
 		}
 
-		let fileName = stack.split("\n").filter(line => {
-			return line.includes(name.split(' -> ')[1]);
-		})[0];
+		if (stack == null) {
+			stack = stackTrace.get();
+			
+			let error = stack.filter(stackItem => {
+				return stackItem.getFunctionName() == name.split(' -> ')[1];
+			}).map(stackItem => {
+				return {
+					typeName: stackItem.getTypeName(),
+					functionName: stackItem.getFunctionName(),
+					methodName: stackItem.getMethodName(),
+					fileName: stackItem.getFileName(),
+					lineNumber: stackItem.getLineNumber(),
+					columnNumber: stackItem.getColumnNumber(),
+					isNative: stackItem.isNative(),
+				};
+			});
 
-		if (fileName) {
-			fileName.trim();
+			if (error) {
+				fileName = error.fileName;
+				lineNumber = error.lineNumber;
+			}
 		}
 
-		let regExp = /\(([^)]+)\)/;
-		let matches = regExp.exec(fileName);
-		if (matches) {
-			fileName = matches[1];
-		}
-
-		if (fileName) {
-			let parts = fileName.split(':');
-			parts.pop();
-			fileName = parts.join(':');
-		} else {
+		if (! fileName) {
 			return name;
 		}
 
 		let rootFolder = process.mainModule.paths[0].split('node_modules')[0].slice(0, -1) + '/';
 		let relativeFileName = fileName.replace(rootFolder, '');
 		let source = fileName.split(':');
-		let lineNumber = source.pop();
+		// let lineNumber = source.pop();
 		let sourceInput = {};
 		sourceInput.file = source.join(':');
 		sourceInput.line = parseInt(lineNumber);
