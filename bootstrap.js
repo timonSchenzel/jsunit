@@ -80,3 +80,10 @@ Vue.component('todo-list', {
 
     props: ['items'],
 });
+
+Vue.component('menu', {
+    template: `
+        <menu-item v-for="item in items" v-text="item"></menu-item>`,
+
+    props: ['items'],
+});
