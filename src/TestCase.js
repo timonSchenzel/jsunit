@@ -189,7 +189,7 @@ module.exports = class TestCase
 
 		if (stack == null) {
 			stack = stackTrace.get();
-			
+
 			let error = stack.filter(stackItem => {
 				return stackItem.getFunctionName() == name.split(' -> ')[1];
 			}).map(stackItem => {
@@ -204,9 +204,9 @@ module.exports = class TestCase
 				};
 			});
 
-			if (error) {
-				fileName = error.fileName;
-				lineNumber = error.lineNumber;
+			if (error && error[0]) {
+				fileName = error[0].fileName;
+				lineNumber = error[0].lineNumber;
 			}
 		}
 
@@ -216,18 +216,17 @@ module.exports = class TestCase
 
 		let rootFolder = process.mainModule.paths[0].split('node_modules')[0].slice(0, -1) + '/';
 		let relativeFileName = fileName.replace(rootFolder, '');
-		let source = fileName.split(':');
-		// let lineNumber = source.pop();
+
 		let sourceInput = {};
-		sourceInput.file = source.join(':');
-		sourceInput.line = parseInt(lineNumber);
+		sourceInput.file = fileName;
+		sourceInput.line = lineNumber;
 		sourceInput.isDependency = false;
 		sourceInput.isWithinProject = true;
 
 		let contents = fs.readFileSync(sourceInput.file, 'utf8');
 		const excerpt = codeExcerpt(contents, sourceInput.line, {maxWidth: process.stdout.columns, around: 1});
 
-		if (!excerpt) {
+		if (! excerpt) {
 			return null;
 		}
 

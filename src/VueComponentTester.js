@@ -10,6 +10,7 @@ module.exports = class VueComponentTester
         this.propsOverride = props;
         this.props = {};
         this.config = {};
+        this.config.stubs = {};
         this.slots = {};
         this.tester = testCaseInstance;
         this.componentName = template.match(/<([^\s>]+)(\s|>)+/)[1];
@@ -21,6 +22,24 @@ module.exports = class VueComponentTester
         }
 
         let testComponent = this.component;
+
+        // Stub child components
+        let componentTemplate = cheerio.load(this.component.options.template);
+
+        let componentRootHtml = componentTemplate('body').children().first().html();
+
+        cheerio(componentRootHtml).each((index, element) => {
+            let childComponentName = element.tagName;
+
+            if (childComponentName) {
+                let stub = Vue.options.components[childComponentName];
+
+                if (stub) {
+                    // Load stub with vue-test-utils
+                    this.config.stubs[childComponentName] = stub.options.template;
+                }
+            }
+        });
 
         this.defaultSlot = '';
 
@@ -36,7 +55,6 @@ module.exports = class VueComponentTester
         });
 
         if (this.defaultSlot) {
-            let componentTemplate = cheerio.load(this.component.options.template);
             let defaultSlotParentName = (componentTemplate('slot').not('[name]').parent()[0].name);
 
             let cleanComponentTemplate = this.component.options.template.replace(/\s+/g, '');
@@ -62,11 +80,10 @@ module.exports = class VueComponentTester
             this.rawProps = null;
         }
 
-        this.config = {
-            slots: this.slots,
-        };
+        this.config.slots = this.slots;
 
         this.wrapper = vueTestUtils.mount(testComponent, this.config);
+
         this.vm = this.wrapper.vm;
 
         this.wrapper.setProps(this.props);
