@@ -1,5 +1,12 @@
 module.exports = class VueComponentTestCase extends TestCase
 {
+    constructor()
+    {
+        super();
+
+        this.clock = sinon.useFakeTimers();
+    }
+
     render(template, props)
     {
         return new Proxy(VueComponentTester.test(
@@ -46,12 +53,7 @@ module.exports = class VueComponentTestCase extends TestCase
         this.assertNotRegExp(regex, contents, message);
     }
 
-    beforeEach()
-    {
-        this.clock = sinon.useFakeTimers();
-    }
-
-    afterEach()
+    tearDown()
     {
         this.clock.restore();
     }

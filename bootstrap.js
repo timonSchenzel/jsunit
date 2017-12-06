@@ -154,6 +154,7 @@ Vue.component('countdown', {
         this.interval = setInterval(() => {
             this.now = new Date();
         }, 1000);
+        
         this.$on('finished', () => clearInterval(this.interval));
     },
 

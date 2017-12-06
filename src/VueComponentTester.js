@@ -138,6 +138,16 @@ module.exports = class VueComponentTester
         return this.wrapper.html();
     }
 
+    assertEmitted(eventName)
+    {
+        this.wrapper.update();
+
+        let events = this.wrapper.emitted();
+        let eventNames = Object.keys(events);
+
+        this.tester.assertTrue(eventNames.includes(eventName), `Assert that event [${eventName}] was emitted, but is was not.`);
+    }
+
     assertSee(expression)
     {
         let rawExpression = expression;
