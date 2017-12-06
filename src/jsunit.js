@@ -33,6 +33,20 @@ global.figures = require('figures');
 global.cheerio = require('cheerio');
 
 /**
+ * Load moment package, Parse, validate, manipulate, and display dates in javascript.
+ *
+ * @type {Object}
+ */
+global.moment = require('moment');
+
+/**
+ * Load sinon package, Test spies, stubs and mocks for JavaScript.
+ *
+ * @type {Object}
+ */
+global.sinon = require('sinon');
+
+/**
  * Load stack-trace package. Get v8 stack traces as an array of CallSite objects.
  *
  * @type {Object}

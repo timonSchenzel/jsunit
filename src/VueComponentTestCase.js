@@ -45,4 +45,14 @@ module.exports = class VueComponentTestCase extends TestCase
     {
         this.assertNotRegExp(regex, contents, message);
     }
+
+    beforeEach()
+    {
+        this.clock = sinon.useFakeTimers();
+    }
+
+    afterEach()
+    {
+        this.clock.restore();
+    }
 }

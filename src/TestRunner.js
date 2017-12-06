@@ -172,11 +172,25 @@ module.exports = class TestRunner
                 testClass['setUp']();
             }
 
+            // Invoke beforeEach method if exists
+            // @todo: create test for this feature
+            if (typeof testClass['beforeEach'] == 'function') {
+                testClass.name = path + ' -> ' + 'beforeEach';
+                testClass['beforeEach']();
+            }
+
 		    testClass.name = path + ' -> ' + name;
 
             try {
                 await testClass[name]();
                 testClass['cleanupAfterSingleTestMethod']();
+
+                // Invoke afterEach method if exists
+                // @todo: create test for this feature
+                if (typeof testClass['afterEach'] == 'function') {
+                    testClass.name = path + ' -> ' + 'afterEach';
+                    testClass['afterEach']();
+                }
             } catch (error) {
                 if (error.message.startsWith('[vue-test-utils]')) {
                     console.error(chalk.red(`  Vue utils error`));

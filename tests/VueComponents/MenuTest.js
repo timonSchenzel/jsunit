@@ -10,5 +10,9 @@ module.exports = class MenuTest extends VueComponentTestCase
         });
 
         this.assertEquals('<ul><li>Foo</li><li>Bar</li><li>Baz</li></ul>', component.toHtml());
+
+        component.setItems(['Foo', 'Bar']);
+
+        this.assertEquals('<ul><li>Foo</li><li>Bar</li></ul>', component.toHtml());
     }
 }

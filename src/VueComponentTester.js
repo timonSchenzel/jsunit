@@ -35,8 +35,8 @@ module.exports = class VueComponentTester
                 let stub = Vue.options.components[childComponentName];
 
                 if (stub) {
-                    // Load stub with vue-test-utils
-                    this.config.stubs[childComponentName] = stub.options.template;
+                    let childComponentWrapper = vueTestUtils.mount(stub);
+                    this.config.stubs[childComponentName] = childComponentWrapper.html();
                 }
             }
         });
@@ -119,6 +119,17 @@ module.exports = class VueComponentTester
     {
         let tester = new this(testCaseInstance, template, props);
         return tester;
+    }
+
+    fastForward(timeExpression)
+    {
+        let time = parseFloat(timeExpression);
+
+        if(timeExpression.substr(timeExpression.length - 2) != 'ms' && timeExpression.substr(timeExpression.length - 1) == 's') {
+            time *= 1000;
+        }
+
+        this.tester.clock.tick(time);
     }
 
     toHtml()
