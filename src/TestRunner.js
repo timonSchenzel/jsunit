@@ -18,6 +18,12 @@ module.exports = class TestRunner
 
 		this.pwd = processData.env.PWD + '/';
 
+        this.firstAssertionHit = true;
+
+        this.totalAssertions = 0;
+
+        this.executedTests = 0;
+
 		this.config = {};
 
 		this.locations = [];
@@ -133,7 +139,7 @@ module.exports = class TestRunner
 	async runTestsInClass(testClass, path, location)
 	{
 		let annotations = this.annotations.getSync(this.path(`${location}/${path}.js`));
-        let invokeSetUp = false;
+        let invokedSetUp = false;
         let testClassMethodIsHit = false;
 
         for (let name of Object.getOwnPropertyNames(Object.getPrototypeOf(testClass))) {
@@ -158,16 +164,24 @@ module.exports = class TestRunner
                 continue;
             }
 
-		    // Apply cli filter
-		    if (this.filter && name != this.filter && testClass.constructor.name != this.filter) {
-		    	continue;
-		    }
+            // Apply cli filter
+            if (this.filter && name != this.filter && testClass.constructor.name != this.filter) {
+                continue;
+            }
+
+            this.totalAssertions++;
+
+            if (this.firstAssertionHit) {
+                this.firstAssertionHit = false;
+                process.stdout.write('  ');
+            }
 
             testClassMethodIsHit = true;
 
             // Invoke setUp method if exists
-            if (typeof testClass['setUp'] == 'function' && ! invokeSetUp) {
-                invokeSetUp = true;
+            if (typeof testClass['setUp'] == 'function' && ! invokedSetUp) {
+                this.executedTests++;
+                invokedSetUp = true;
                 testClass.name = path + ' -> ' + 'setUp';
                 testClass['setUp']();
             }
@@ -179,11 +193,11 @@ module.exports = class TestRunner
                 testClass['beforeEach']();
             }
 
-		    testClass.name = path + ' -> ' + name;
+            testClass.name = path + ' -> ' + name;
 
             try {
+                process.stdout.write('.');
                 await testClass[name]();
-                testClass['cleanupAfterSingleTestMethod']();
 
                 // Invoke afterEach method if exists
                 // @todo: create test for this feature

@@ -16,6 +16,8 @@ module.exports = class VueComponentTestCase extends TestCase
         ), {
             get(target, property, receiver)
             {
+                target.wrapper.update();
+
                 if (property == 'page') {
                     return target.vm;
                 }
@@ -53,8 +55,28 @@ module.exports = class VueComponentTestCase extends TestCase
         this.assertNotRegExp(regex, contents, message);
     }
 
+    setUp()
+    {
+        super.setUp();
+    }
+
+    beforeEach()
+    {
+        super.beforeEach();
+
+        this.clock.restore();
+        this.clock = sinon.useFakeTimers();
+    }
+
+    afterEach()
+    {
+        super.afterEach();
+    }
+
     tearDown()
     {
+        super.tearDown();
+
         this.clock.restore();
     }
 }

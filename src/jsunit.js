@@ -82,15 +82,19 @@ let TestRunner = require('./TestRunner');
  */
 let jsUnit = new TestRunner(process);
 
-/**
- * Boot jsUnit, basically this will read the config file "jsunit.json".
- * If a bootstrap file is provided it will load this fill.
- * Further it scan all provided locations and get the test classes.
- * @todo: set env stuff.
- */
-jsUnit.boot();
+(async () => {
+    /**
+     * Boot jsUnit, basically this will read the config file "jsunit.json".
+     * If a bootstrap file is provided it will load this fill.
+     * Further it scan all provided locations and get the test classes.
+     * @todo: set env stuff.
+     */
+    await jsUnit.boot();
 
-/**
- * Finally, Run all tests found in all the test classes.
- */
-jsUnit.test();
+    /**
+     * Finally, Run all tests found in all the test classes.
+     */
+    await jsUnit.test();
+
+    console.log(`\n  ${jsUnit.executedTests} test${jsUnit.executedTests != 1 ? 's' : ''}`);
+})();

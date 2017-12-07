@@ -1,7 +1,9 @@
 module.exports = class CountdownTest extends VueComponentTestCase
 {
-    setUp()
+    beforeEach()
     {
+        super.beforeEach();
+
         this.until = moment().add(10, 'seconds');
 
         this.component = this.render('<countdown :until="until"></countdown>', { until: this.until });
@@ -57,18 +59,17 @@ module.exports = class CountdownTest extends VueComponentTestCase
     {
         this.component.fastForward('10s');
 
-
         this.component.assertEmitted('finished');
     }
 
     /** @test */
-    async it_clears_the_interval_once_completed()
+    it_clears_the_interval_once_completed()
     {
-        await this.component.fastForward('10s');
+        this.component.fastForward('10s');
 
         this.assertEquals(10, this.component.now.getSeconds());
 
-        await this.component.fastForward('5s');
+        this.component.fastForward('5s');
 
         this.assertEquals(10, this.component.now.getSeconds());
     }

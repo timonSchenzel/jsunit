@@ -8,6 +8,26 @@ module.exports = class TestCase
 		this.cleanupAfterSingleTestMethod();
 	}
 
+	setUp()
+	{
+
+	}
+
+	beforeEach()
+	{
+
+	}
+
+	afterEach()
+	{
+		this.cleanupAfterSingleTestMethod();
+	}
+
+	tearDown()
+	{
+
+	}
+
 	async asyncTest(callable)
 	{
 		await test(async t => {
