@@ -32,6 +32,8 @@ module.exports = class TestCase
 	{
 		await test(async t => {
 			await callable(t);
+
+			this.finishTest(t);
 		});
 	}
 
@@ -40,6 +42,8 @@ module.exports = class TestCase
 		// .pass([message])
 		test(this.visualError(), async t => {
 			await t.pass(message);
+
+			this.finishTest(t);
 		});
 	}
 
@@ -48,6 +52,8 @@ module.exports = class TestCase
 		// .fail([message])
 		test(this.visualError(), async t => {
 			await t.fail(message);
+
+			this.finishTest(t);
 		});
 	}
 
@@ -58,6 +64,8 @@ module.exports = class TestCase
 		// .truthy(value, [message])
 		test(this.visualError(), async t => {
 			await t.truthy(value, message);
+
+			this.finishTest(t);
 		});
 	}
 
@@ -68,6 +76,8 @@ module.exports = class TestCase
 		// .falsy(value, [message])
 		test(this.visualError(), async t => {
 			await t.falsy(value, message);
+
+			this.finishTest(t);
 		});
 	}
 
@@ -78,6 +88,8 @@ module.exports = class TestCase
 		// .deepEqual(value, expected, [message])
 		test(this.visualError(), async t => {
 			await t.deepEqual(value, expected, message);
+
+			this.finishTest(t);
 		});
 	}
 
@@ -88,6 +100,8 @@ module.exports = class TestCase
 		// .notDeepEqual(value, expected, [message])
 		test(this.visualError(), async t => {
 			await t.notDeepEqual(value, expected, message);
+
+			this.finishTest(t);
 		});
 	}
 
@@ -121,6 +135,8 @@ module.exports = class TestCase
 		// .throws(function|promise, [error, [message]])
 		test(this.visualError(), async t => {
 			await t.throws(func, error, message);
+
+			this.finishTest(t);
 		});
 	}
 
@@ -134,6 +150,8 @@ module.exports = class TestCase
 		// .notThrows(function|promise, [message])
 		test(this.visualError(), async t => {
 			await t.notThrows(func, error, message);
+
+			this.finishTest(t);
 		});
 	}
 
@@ -146,6 +164,8 @@ module.exports = class TestCase
 		// .regex(contents, regex, [message])
 		test(this.visualError(), async t => {
 			await t.regex(contents, regex, message);
+
+			this.finishTest(t);
 		});
 	}
 
@@ -158,6 +178,8 @@ module.exports = class TestCase
 		// .notRegex(contents, regex, [message])
 		test(this.visualError(), async t => {
 			await t.notRegex(contents, regex, message);
+
+			this.finishTest(t);
 		});
 	}
 
@@ -278,6 +300,14 @@ module.exports = class TestCase
 			.join('\n');
 
 		return name + ' at ' + sourceInput.file + ':' + sourceInput.line;
+	}
+
+	finishTest(test) {
+		if (test._test.assertError) {
+			process.stdout.write(chalk.red('x'));
+		} else {
+			process.stdout.write(chalk.green('.'));
+		}
 	}
 
 	cleanupAfterSingleTestMethod()

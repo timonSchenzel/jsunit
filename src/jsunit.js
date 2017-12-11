@@ -96,5 +96,5 @@ let jsUnit = new TestRunner(process);
      */
     await jsUnit.test();
 
-    console.log(`\n  ${jsUnit.executedTests} test${jsUnit.executedTests != 1 ? 's' : ''}`);
+    // console.log(`\n  ${jsUnit.executedTests} test${jsUnit.executedTests != 1 ? 's' : ''}`);
 })();

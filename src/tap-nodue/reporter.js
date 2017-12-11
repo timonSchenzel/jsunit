@@ -26,13 +26,17 @@ const reporter = () => {
   const onResults = (data) => {
     const time = timer()
 
+    // process.stdout.clearLine();
+    // process.stdout.cursorTo(0);
+
     if (noTestsFound == false) {
+      log += "\n";
       log += '  ' + chalk.dim(`Time: ${ms(time)}\n`);
     }
 
 
-   log += '  ' + testsOverview;
-   log += "\n";
+   // log += '  ' + testsOverview;
+   // log += "\n";
    log += visualErrors;
 
     result.count = data.count

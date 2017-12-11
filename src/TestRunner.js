@@ -193,10 +193,9 @@ module.exports = class TestRunner
                 testClass['beforeEach']();
             }
 
-            testClass.name = path + ' -> ' + name;
+            let testResult = testClass.name = path + ' -> ' + name;
 
             try {
-                process.stdout.write('.');
                 await testClass[name]();
 
                 // Invoke afterEach method if exists
