@@ -24,6 +24,8 @@ module.exports = class TestRunner
 
         this.executedTests = 0;
 
+        this.reporter = null;
+
 		this.config = {};
 
 		this.locations = [];
@@ -49,7 +51,29 @@ module.exports = class TestRunner
 		} else {
             this.config = require('./defaultConfig');
         }
+
+        if (this.config.reporter) {
+            this.loadReporter(this.config.reporter);
+        }
 	}
+
+    loadReporter(reporter)
+    {
+        try {
+            if (typeof reporter == 'string') {
+                this.reporter = new (require(reporter));
+            }
+
+            if (typeof reporter == 'function') {
+                this.reporter = reporter;
+            }
+        } catch (error) {
+            console.error(chalk.red(`  ${figures.cross} jsUnit error`));
+            console.error(error);
+
+            process.exit(0);
+        }
+    }
 
 	parseFilter(rawFilter = '')
 	{
@@ -62,8 +86,10 @@ module.exports = class TestRunner
 		return null;
 	}
 
-	boot()
+	async boot()
 	{
+        await this.reporter.beforeBoot();
+
         // Load vue specific stuff
         /**
          * Load VueComponentTestCase class.
@@ -120,20 +146,26 @@ module.exports = class TestRunner
 		}
 
 		this.getTestLocations();
+
+        await this.reporter.afterBoot();
 	}
 
-	async test()
+	async test(callback)
 	{
+        await this.reporter.beforeTest();
+
         try {
     		for (let location in this.locations) {
     			await this.runTestsInLocation(location);
-    		}
+            }
         } catch (error) {
             console.error(chalk.red(`  ${figures.cross} jsUnit error`));
             console.error(error);
 
             process.exit(0);
         }
+
+        await this.reporter.afterTest();
 	}
 
 	async runTestsInClass(testClass, path, location)
@@ -196,6 +228,8 @@ module.exports = class TestRunner
             let testResult = testClass.name = path + ' -> ' + name;
 
             try {
+                this.reporter.beforeEachAssertion(name);
+
                 await testClass[name]();
 
                 // Invoke afterEach method if exists
@@ -248,7 +282,9 @@ module.exports = class TestRunner
         let testFiles = this.getTestFilesInLocation(this.locations[location]);
 
         for (let filePath in testFiles) {
-        	await this.runTestsInClass(new testFiles[filePath](), filePath, location);
+            let testClass = new testFiles[filePath]();
+            testClass.reporter = this.reporter;
+        	await this.runTestsInClass(testClass, filePath, location);
         }
     }
 

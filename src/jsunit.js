@@ -54,6 +54,13 @@ global.sinon = require('sinon');
 global.stackTrace = require('stack-trace');
 
 /**
+ * Load Reporter class.
+ *
+ * @type {Object}
+ */
+global.Reporter = require('./reporters/Reporter');
+
+/**
  * Load TestCase class.
  *
  * @type {Object}

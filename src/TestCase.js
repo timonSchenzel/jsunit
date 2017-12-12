@@ -4,6 +4,7 @@ module.exports = class TestCase
 	{
 		this.vm = null;
 		this.name = null;
+		this.reporter = null;
 
 		this.cleanupAfterSingleTestMethod();
 	}
@@ -33,7 +34,7 @@ module.exports = class TestCase
 		await test(async t => {
 			await callable(t);
 
-			this.finishTest(t);
+			this.finishAssertion(t);
 		});
 	}
 
@@ -43,7 +44,7 @@ module.exports = class TestCase
 		test(this.visualError(), async t => {
 			await t.pass(message);
 
-			this.finishTest(t);
+			this.finishAssertion(t);
 		});
 	}
 
@@ -53,7 +54,7 @@ module.exports = class TestCase
 		test(this.visualError(), async t => {
 			await t.fail(message);
 
-			this.finishTest(t);
+			this.finishAssertion(t);
 		});
 	}
 
@@ -65,7 +66,7 @@ module.exports = class TestCase
 		test(this.visualError(), async t => {
 			await t.truthy(value, message);
 
-			this.finishTest(t);
+			this.finishAssertion(t);
 		});
 	}
 
@@ -77,7 +78,7 @@ module.exports = class TestCase
 		test(this.visualError(), async t => {
 			await t.falsy(value, message);
 
-			this.finishTest(t);
+			this.finishAssertion(t);
 		});
 	}
 
@@ -89,7 +90,7 @@ module.exports = class TestCase
 		test(this.visualError(), async t => {
 			await t.deepEqual(value, expected, message);
 
-			this.finishTest(t);
+			this.finishAssertion(t);
 		});
 	}
 
@@ -101,7 +102,7 @@ module.exports = class TestCase
 		test(this.visualError(), async t => {
 			await t.notDeepEqual(value, expected, message);
 
-			this.finishTest(t);
+			this.finishAssertion(t);
 		});
 	}
 
@@ -136,7 +137,7 @@ module.exports = class TestCase
 		test(this.visualError(), async t => {
 			await t.throws(func, error, message);
 
-			this.finishTest(t);
+			this.finishAssertion(t);
 		});
 	}
 
@@ -151,7 +152,7 @@ module.exports = class TestCase
 		test(this.visualError(), async t => {
 			await t.notThrows(func, error, message);
 
-			this.finishTest(t);
+			this.finishAssertion(t);
 		});
 	}
 
@@ -165,7 +166,7 @@ module.exports = class TestCase
 		test(this.visualError(), async t => {
 			await t.regex(contents, regex, message);
 
-			this.finishTest(t);
+			this.finishAssertion(t);
 		});
 	}
 
@@ -179,7 +180,7 @@ module.exports = class TestCase
 		test(this.visualError(), async t => {
 			await t.notRegex(contents, regex, message);
 
-			this.finishTest(t);
+			this.finishAssertion(t);
 		});
 	}
 
@@ -302,12 +303,9 @@ module.exports = class TestCase
 		return name + ' at ' + sourceInput.file + ':' + sourceInput.line;
 	}
 
-	finishTest(test) {
-		if (test._test.assertError) {
-			process.stdout.write(chalk.red('x'));
-		} else {
-			process.stdout.write(chalk.green('.'));
-		}
+	finishAssertion(test) {
+		this.reporter.results[this.name] = test;
+		this.reporter.afterEachAssertion(test);
 	}
 
 	cleanupAfterSingleTestMethod()

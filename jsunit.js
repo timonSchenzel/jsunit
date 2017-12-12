@@ -1,12 +1,13 @@
 module.exports = {
-	"bootstrap": "bootstrap",
-	"vue": {
-        "require": () => {
+    reporter: './reporters/DotReporter',
+	bootstrap: 'bootstrap',
+	vue: {
+        require: () => {
             return require('vue');
         },
-        "referenceName": "Vue"
+        referenceName: "Vue"
     },
-	"files": [
+	files: [
 		"tests"
 	]
 }
