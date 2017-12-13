@@ -30,7 +30,7 @@ module.exports = class Reporter
 
     }
 
-    afterEachTest(results)
+    afterEachTest(testName, results)
     {
 
     }

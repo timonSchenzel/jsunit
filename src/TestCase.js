@@ -5,6 +5,7 @@ module.exports = class TestCase
 		this.vm = null;
 		this.name = null;
 		this.reporter = null;
+		this.firstAssertionHit = true;
 
 		this.cleanupAfterSingleTestMethod();
 	}
@@ -199,6 +200,8 @@ module.exports = class TestCase
 		// .snapshot(contents, [message])
 		test(this.visualError(), async t => {
 			await t.snapshot(contents, message);
+
+			this.finishAssertion(t);
 		});
 	}
 
@@ -305,6 +308,16 @@ module.exports = class TestCase
 
 	finishAssertion(test) {
 		this.reporter.results[this.name] = test;
+		let results = {};
+
+		if (this.firstAssertionHit) {
+			this.firstAssertionHit = false;
+			let [className, testName] = this.name.split(' -> ');
+
+			this.reporter.beforeEachTest(className);
+			this.reporter.afterEachTest(className, results);
+		}
+
 		this.reporter.afterEachAssertion(test);
 	}
 
