@@ -33,9 +33,11 @@ module.exports = class TestCase
 	async asyncTest(callable)
 	{
 		await test(async t => {
+			this.beforeAssertion(t);
+
 			await callable(t);
 
-			this.finishAssertion(t);
+			this.afterAssertion(t);
 		});
 	}
 
@@ -43,9 +45,11 @@ module.exports = class TestCase
 	{
 		// .pass([message])
 		test(this.visualError(), async t => {
+			this.beforeAssertion(t);
+
 			await t.pass(message);
 
-			this.finishAssertion(t);
+			this.afterAssertion(t);
 		});
 	}
 
@@ -53,9 +57,11 @@ module.exports = class TestCase
 	{
 		// .fail([message])
 		test(this.visualError(), async t => {
+			this.beforeAssertion(t);
+
 			await t.fail(message);
 
-			this.finishAssertion(t);
+			this.afterAssertion(t);
 		});
 	}
 
@@ -65,9 +71,11 @@ module.exports = class TestCase
 
 		// .truthy(value, [message])
 		test(this.visualError(), async t => {
+			this.beforeAssertion(t);
+
 			await t.truthy(value, message);
 
-			this.finishAssertion(t);
+			this.afterAssertion(t);
 		});
 	}
 
@@ -77,9 +85,11 @@ module.exports = class TestCase
 
 		// .falsy(value, [message])
 		test(this.visualError(), async t => {
+			this.beforeAssertion(t);
+
 			await t.falsy(value, message);
 
-			this.finishAssertion(t);
+			this.afterAssertion(t);
 		});
 	}
 
@@ -89,9 +99,11 @@ module.exports = class TestCase
 
 		// .deepEqual(value, expected, [message])
 		test(this.visualError(), async t => {
+			this.beforeAssertion(t);
+
 			await t.deepEqual(value, expected, message);
 
-			this.finishAssertion(t);
+			this.afterAssertion(t);
 		});
 	}
 
@@ -101,9 +113,11 @@ module.exports = class TestCase
 
 		// .notDeepEqual(value, expected, [message])
 		test(this.visualError(), async t => {
+			this.beforeAssertion(t);
+
 			await t.notDeepEqual(value, expected, message);
 
-			this.finishAssertion(t);
+			this.afterAssertion(t);
 		});
 	}
 
@@ -136,9 +150,11 @@ module.exports = class TestCase
 	{
 		// .throws(function|promise, [error, [message]])
 		test(this.visualError(), async t => {
+			this.beforeAssertion(t);
+
 			await t.throws(func, error, message);
 
-			this.finishAssertion(t);
+			this.afterAssertion(t);
 		});
 	}
 
@@ -151,9 +167,11 @@ module.exports = class TestCase
 	{
 		// .notThrows(function|promise, [message])
 		test(this.visualError(), async t => {
+			this.beforeAssertion(t);
+
 			await t.notThrows(func, error, message);
 
-			this.finishAssertion(t);
+			this.afterAssertion(t);
 		});
 	}
 
@@ -165,9 +183,11 @@ module.exports = class TestCase
 
 		// .regex(contents, regex, [message])
 		test(this.visualError(), async t => {
+			this.beforeAssertion(t);
+
 			await t.regex(contents, regex, message);
 
-			this.finishAssertion(t);
+			this.afterAssertion(t);
 		});
 	}
 
@@ -179,9 +199,11 @@ module.exports = class TestCase
 
 		// .notRegex(contents, regex, [message])
 		test(this.visualError(), async t => {
+			this.beforeAssertion(t);
+
 			await t.notRegex(contents, regex, message);
 
-			this.finishAssertion(t);
+			this.afterAssertion(t);
 		});
 	}
 
@@ -199,9 +221,11 @@ module.exports = class TestCase
 	{
 		// .snapshot(contents, [message])
 		test(this.visualError(), async t => {
+			this.beforeAssertion(t);
+
 			await t.snapshot(contents, message);
 
-			this.finishAssertion(t);
+			this.afterAssertion(t);
 		});
 	}
 
@@ -306,19 +330,37 @@ module.exports = class TestCase
 		return name + ' at ' + sourceInput.file + ':' + sourceInput.line;
 	}
 
-	finishAssertion(test) {
-		this.reporter.results[this.name] = test;
+	beforeAssertion(test)
+	{
+		if (this.firstAssertionHit) {
+			this.firstAssertionHit = false;
+			let [className, testName] = this.name.split(' -> ');
+
+			this.reporter.beforeEachTest(className);
+		}
+
+		this.reporter.beforeEachAssertion(test);
+	}
+
+	afterAssertion(test)
+	{
+		this.reporter.results[test._test.title] = test;
 		let results = {};
 
 		if (this.firstAssertionHit) {
 			this.firstAssertionHit = false;
 			let [className, testName] = this.name.split(' -> ');
 
-			this.reporter.beforeEachTest(className);
 			this.reporter.afterEachTest(className, results);
 		}
 
 		this.reporter.afterEachAssertion(test);
+
+		this.reporter.assertionCount++;
+
+		// if (this.reporter.assertionCount == 48) {
+		// 	this.reporter.afterTest(this.reporter.results);
+		// }
 	}
 
 	cleanupAfterSingleTestMethod()

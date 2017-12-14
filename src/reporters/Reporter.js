@@ -3,6 +3,7 @@ module.exports = class Reporter
     constructor()
     {
         this.results = {};
+        this.assertionCount = 0;
     }
 
     beforeBoot()
@@ -35,14 +36,14 @@ module.exports = class Reporter
 
     }
 
-    beforeEachAssertion(assertionName)
+    beforeEachAssertion(assertion)
     {
 
     }
 
-    afterEachAssertion(results)
+    afterEachAssertion(assertion)
     {
-        if (results._test.assertError) {
+        if (assertion._test.assertError) {
             this.appendLog(chalk.red('x'));
         } else {
             this.appendLog(chalk.green('.'));

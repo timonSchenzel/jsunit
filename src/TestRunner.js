@@ -152,8 +152,6 @@ module.exports = class TestRunner
 
 	async test(callback)
 	{
-        await this.reporter.beforeTest();
-
         try {
     		for (let location in this.locations) {
     			await this.runTestsInLocation(location);
@@ -164,8 +162,6 @@ module.exports = class TestRunner
 
             process.exit(0);
         }
-
-        await this.reporter.afterTest();
 	}
 
 	async runTestsInClass(testClass, path, location)
@@ -228,8 +224,6 @@ module.exports = class TestRunner
             let testResult = testClass.name = path + ' -> ' + name;
 
             try {
-                this.reporter.beforeEachAssertion(name);
-
                 await testClass[name]();
 
                 // Invoke afterEach method if exists
