@@ -32,13 +32,13 @@ module.exports = class TestCase
 
 	async asyncTest(callable)
 	{
-		await test(async t => {
-			this.beforeAssertion(t);
+		// await test(async t => {
+		// 	this.beforeAssertion(t);
 
-			await callable(t);
+		// 	await callable(t);
 
-			this.afterAssertion(t);
-		});
+		// 	this.afterAssertion(t);
+		// });
 	}
 
 	pass(message)
@@ -67,30 +67,56 @@ module.exports = class TestCase
 
 	assertTrue(value, message)
 	{
+		let result = {};
+
 		value = this.normalizeValue(value);
 
+		let pass = value == true;
+
+		if (pass) {
+			result.pass = true;
+		} else {
+			result.pass = false;
+			result.error = new Error;
+		}
+
+		this.afterAssertion(this.name, result);
+
 		// .truthy(value, [message])
-		test(this.visualError(), async t => {
-			this.beforeAssertion(t);
+		// test(this.visualError(), async t => {
+		// 	this.beforeAssertion(t);
 
-			await t.truthy(value, message);
+		// 	await t.truthy(value, message);
 
-			this.afterAssertion(t);
-		});
+		// 	this.afterAssertion(t);
+		// });
 	}
 
 	assertFalse(value, message)
 	{
-		value = this.normalizeValue(value);
+		let result = {};
+
+		// value = this.normalizeValue(value);
+
+		let pass = value == false;
+
+		if (pass) {
+			result.pass = true;
+		} else {
+			result.pass = false;
+			result.error = new Error;
+		}
+
+		this.afterAssertion(this.name, result);
 
 		// .falsy(value, [message])
-		test(this.visualError(), async t => {
-			this.beforeAssertion(t);
+		// test(this.visualError(), async t => {
+		// 	this.beforeAssertion(t);
 
-			await t.falsy(value, message);
+		// 	await t.falsy(value, message);
 
-			this.afterAssertion(t);
-		});
+		// 	this.afterAssertion(t);
+		// });
 	}
 
 	assertDeepEqual(expected, value, message)
@@ -342,21 +368,23 @@ module.exports = class TestCase
 		this.reporter.beforeEachAssertion(test);
 	}
 
-	afterAssertion(test)
+	afterAssertion(name, assertion)
 	{
-		this.reporter.results[test._test.title] = test;
-		let results = {};
+		this.reporter.afterEachAssertion(assertion);
+		// this.reporter.results[test._test.title] = test;
+		process.send({name, assertion});
+		// let results = {};
 
-		if (this.firstAssertionHit) {
-			this.firstAssertionHit = false;
-			let [className, testName] = this.name.split(' -> ');
+		// if (this.firstAssertionHit) {
+		// 	this.firstAssertionHit = false;
+		// 	let [className, testName] = this.name.split(' -> ');
 
-			this.reporter.afterEachTest(className, results);
-		}
+		// 	this.reporter.afterEachTest(className, results);
+		// }
 
-		this.reporter.afterEachAssertion(test);
+		// this.reporter.afterEachAssertion(test);
 
-		this.reporter.assertionCount++;
+		// this.reporter.assertionCount++;
 
 		// if (this.reporter.assertionCount == 48) {
 		// 	this.reporter.afterTest(this.reporter.results);

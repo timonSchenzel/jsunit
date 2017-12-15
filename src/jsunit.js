@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 require('jsdom-global')();
 
 let startDate = new Date();
@@ -16,7 +17,7 @@ global.fs = require('fs');
  *
  * @type {Object}
  */
-global.test = require('ava');
+// global.test = require('ava');
 
 /**
  * Load figures package, will make unicode symbols available for terminal/cmd.

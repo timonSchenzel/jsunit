@@ -43,10 +43,10 @@ module.exports = class Reporter
 
     afterEachAssertion(assertion)
     {
-        if (assertion._test.assertError) {
-            this.appendLog(chalk.red('x'));
-        } else {
+        if (assertion.pass) {
             this.appendLog(chalk.green('.'));
+        } else {
+            this.appendLog(chalk.red('x'));
         }
     }
 

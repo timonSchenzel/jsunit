@@ -14,7 +14,7 @@ module.exports = class TestRunner
 
 		this.process = processData;
 
-		this.root = processData.env.INIT_CWD + '/';
+		this.root = processData.env.PWD + '/';
 
 		this.pwd = processData.env.PWD + '/';
 
@@ -33,6 +33,7 @@ module.exports = class TestRunner
 		this.rawFilter = processData.env.npm_lifecycle_script;
 
         this.filter = this.parseFilter(this.rawFilter);
+        this.filter = 'it_is_able_to_assert_true';
 
 		this.loadConfig();
 

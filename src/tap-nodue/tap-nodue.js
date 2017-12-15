@@ -3,6 +3,7 @@
 const nodueReporter = require('./reporter');
 const stream = nodueReporter();
 
+
 process.stdin
   .pipe(stream)
   .pipe(process.stdout);

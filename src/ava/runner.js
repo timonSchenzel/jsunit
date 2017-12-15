@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 try {
 	require('./cli').run();
 } catch (err) {
