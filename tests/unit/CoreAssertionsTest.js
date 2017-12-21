@@ -1,9 +1,17 @@
 module.exports = class CoreAssertionsTest extends TestCase
 {
     /** @test */
-    it_is_able_to_assert_true()
+    async it_is_able_to_assert_true()
     {
+        // let value = await this.getTrueFromAsync();
         this.assertTrue(true);
+
+        // this.assertEquals([1, 2, 3], [1, 3, 2]);
+    }
+
+    async getTrueFromAsync()
+    {
+        return true;
     }
 
     /** @test */

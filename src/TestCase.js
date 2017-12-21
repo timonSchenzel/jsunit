@@ -3,7 +3,7 @@ module.exports = class TestCase
 	constructor()
 	{
 		this.vm = null;
-		this.name = null;
+		this.test = null;
 		this.reporter = null;
 		this.firstAssertionHit = true;
 
@@ -65,13 +65,15 @@ module.exports = class TestCase
 		});
 	}
 
-	assertTrue(value, message)
+	assertTrue(actual, message)
 	{
 		let result = {};
 
-		value = this.normalizeValue(value);
+		this.beforeAssertion();
 
-		let pass = value == true;
+		// actual = this.normalizeValue(actual);
+
+		let pass = actual == true;
 
 		if (pass) {
 			result.pass = true;
@@ -80,25 +82,27 @@ module.exports = class TestCase
 			result.error = new Error;
 		}
 
-		this.afterAssertion(this.name, result);
+		this.afterAssertion(result);
 
-		// .truthy(value, [message])
+		// .truthy(actual, [message])
 		// test(this.visualError(), async t => {
 		// 	this.beforeAssertion(t);
 
-		// 	await t.truthy(value, message);
+		// 	await t.truthy(actual, message);
 
 		// 	this.afterAssertion(t);
 		// });
 	}
 
-	assertFalse(value, message)
+	assertFalse(actual, message)
 	{
 		let result = {};
 
-		// value = this.normalizeValue(value);
+		this.beforeAssertion();
 
-		let pass = value == false;
+		// actual = this.normalizeValue(actual);
+
+		let pass = actual == false;
 
 		if (pass) {
 			result.pass = true;
@@ -107,54 +111,81 @@ module.exports = class TestCase
 			result.error = new Error;
 		}
 
-		this.afterAssertion(this.name, result);
+		this.afterAssertion(result);
 
-		// .falsy(value, [message])
+		// .falsy(actual, [message])
 		// test(this.visualError(), async t => {
 		// 	this.beforeAssertion(t);
 
-		// 	await t.falsy(value, message);
+		// 	await t.falsy(actual, message);
 
 		// 	this.afterAssertion(t);
 		// });
 	}
 
-	assertDeepEqual(expected, value, message)
+	assertDeepEqual(expected, actual, message)
 	{
-		value = this.normalizeValue(value);
+		// actual = this.normalizeValue(actual);
 
-		// .deepEqual(value, expected, [message])
-		test(this.visualError(), async t => {
-			this.beforeAssertion(t);
+		// .deepEqual(actual, expected, [message])
+		// test(this.visualError(), async t => {
+		// 	this.beforeAssertion(t);
 
-			await t.deepEqual(value, expected, message);
+		// 	await t.deepEqual(actual, expected, message);
 
-			this.afterAssertion(t);
-		});
+		// 	this.afterAssertion(t);
+		// });
 	}
 
-	assertNotDeepEqual(expected, value, message)
+	assertNotDeepEqual(expected, actual, message)
 	{
-		value = this.normalizeValue(value);
+		// actual = this.normalizeValue(actual);
+		let result = {};
 
-		// .notDeepEqual(value, expected, [message])
-		test(this.visualError(), async t => {
-			this.beforeAssertion(t);
+		this.beforeAssertion();
 
-			await t.notDeepEqual(value, expected, message);
+		let pass = ! concordance.compare(actual, expected).pass;
 
-			this.afterAssertion(t);
-		});
+		if (pass) {
+			result.pass = true;
+		} else {
+			result.pass = false;
+			result.error = new Error;
+		}
+
+		this.afterAssertion(result);
+
+		// .notDeepEqual(actual, expected, [message])
+		// test(this.visualError(), async t => {
+		// 	this.beforeAssertion(t);
+
+		// 	await t.notDeepEqual(actual, expected, message);
+
+		// 	this.afterAssertion(t);
+		// });
 	}
 
-	assertEquals(expected, value, message)
+	assertEquals(expected, actual, message)
 	{
-		this.assertDeepEqual(expected, value, message);
+		let result = {};
+
+		this.beforeAssertion();
+
+		let pass = concordance.compare(actual, expected).pass;
+
+		if (pass) {
+			result.pass = true;
+		} else {
+			result.pass = false;
+			result.error = new Error;
+		}
+
+		this.afterAssertion(result);
 	}
 
-	assertNotEquals(expected, value, message)
+	assertNotEquals(expected, actual, message)
 	{
-		this.assertNotDeepEqual(expected, value, message);
+		this.assertNotDeepEqual(expected, actual, message);
 	}
 
 	assertCount(expected, countable)
@@ -207,14 +238,29 @@ module.exports = class TestCase
 		    regex = new RegExp(regex, 'gim');
 		}
 
+		let result = {};
+
+		this.beforeAssertion();
+
+		let pass = regex.test(contents);
+
+		if (pass) {
+			result.pass = true;
+		} else {
+			result.pass = false;
+			result.error = new Error;
+		}
+
+		this.afterAssertion(result);
+
 		// .regex(contents, regex, [message])
-		test(this.visualError(), async t => {
-			this.beforeAssertion(t);
+		// test(this.visualError(), async t => {
+		// 	this.beforeAssertion(t);
 
-			await t.regex(contents, regex, message);
+		// 	await t.regex(contents, regex, message);
 
-			this.afterAssertion(t);
-		});
+		// 	this.afterAssertion(t);
+		// });
 	}
 
 	assertNotRegExp(regex, contents, message)
@@ -223,14 +269,29 @@ module.exports = class TestCase
 		    regex = new RegExp(regex, 'gim');
 		}
 
+		let result = {};
+
+		this.beforeAssertion();
+
+		let pass = ! regex.test(contents);
+
+		if (pass) {
+			result.pass = true;
+		} else {
+			result.pass = false;
+			result.error = new Error;
+		}
+
+		this.afterAssertion(result);
+
 		// .notRegex(contents, regex, [message])
-		test(this.visualError(), async t => {
-			this.beforeAssertion(t);
+		// test(this.visualError(), async t => {
+		// 	this.beforeAssertion(t);
 
-			await t.notRegex(contents, regex, message);
+		// 	await t.notRegex(contents, regex, message);
 
-			this.afterAssertion(t);
-		});
+		// 	this.afterAssertion(t);
+		// });
 	}
 
 	assertContains(regex, contents, message)
@@ -356,23 +417,27 @@ module.exports = class TestCase
 		return name + ' at ' + sourceInput.file + ':' + sourceInput.line;
 	}
 
-	beforeAssertion(test)
+	beforeAssertion()
 	{
-		if (this.firstAssertionHit) {
-			this.firstAssertionHit = false;
-			let [className, testName] = this.name.split(' -> ');
-
-			this.reporter.beforeEachTest(className);
-		}
-
-		this.reporter.beforeEachAssertion(test);
+		this.reporter.beforeEachAssertion(this.test);
 	}
 
-	afterAssertion(name, assertion)
+	afterAssertion(assertion)
 	{
+		assertion.file = this.test.file;
+		assertion.function = this.test.function;
+
 		this.reporter.afterEachAssertion(assertion);
+
+
+		if (assertion.pass) {
+			this.reporter.afterEachPassedAssertion(assertion);
+		} else {
+			this.reporter.afterEachFailedAssertion(assertion);
+		}
+
 		// this.reporter.results[test._test.title] = test;
-		process.send({name, assertion});
+		// process.send({name, assertion});
 		// let results = {};
 
 		// if (this.firstAssertionHit) {

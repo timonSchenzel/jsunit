@@ -13,12 +13,11 @@ let annotations = require('./utilities/annotations');
 global.fs = require('fs');
 
 /**
- * Load ava's test framework.
+ * Load concordance package, Compare, format, diff and serialize any JavaScript value.
  *
  * @type {Object}
  */
-// global.test = require('ava');
-
+global.concordance = require('concordance');
 /**
  * Load figures package, will make unicode symbols available for terminal/cmd.
  *

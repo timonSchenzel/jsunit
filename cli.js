@@ -13,5 +13,6 @@ testRun.on('message', (data) => {
 });
 
 testRun.on('exit', function (code, signal) {
-    console.log(results);
+    console.log('');
+    // console.log(results);
 });

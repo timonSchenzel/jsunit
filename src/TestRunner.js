@@ -33,7 +33,7 @@ module.exports = class TestRunner
 		this.rawFilter = processData.env.npm_lifecycle_script;
 
         this.filter = this.parseFilter(this.rawFilter);
-        this.filter = 'it_is_able_to_assert_true';
+        this.filter = processData.argv.slice(2)[0];
 
 		this.loadConfig();
 
@@ -153,6 +153,8 @@ module.exports = class TestRunner
 
 	async test(callback)
 	{
+        await this.reporter.beforeTest();
+
         try {
     		for (let location in this.locations) {
     			await this.runTestsInLocation(location);
@@ -163,6 +165,8 @@ module.exports = class TestRunner
 
             process.exit(0);
         }
+
+        await this.reporter.afterTest();
 	}
 
 	async runTestsInClass(testClass, path, location)
@@ -222,7 +226,7 @@ module.exports = class TestRunner
                 testClass['beforeEach']();
             }
 
-            let testResult = testClass.name = path + ' -> ' + name;
+            testClass.test = { file: path, function: name };
 
             try {
                 await testClass[name]();
@@ -246,15 +250,15 @@ module.exports = class TestRunner
 
                     if ((expectedException && expectedException.name) || (notExpectedException && notExpectedException.name)) {
                         if (expectedException && expectedException.name) {
-                            test(testClass.visualError(error.stack, testClass.name), t => {
-                                t.is(expectedException.name, error.name, `Assert that exception [${expectedException.name}] was thrown, but is was not.`);
-                            });
+                            // test(testClass.visualError(error.stack, testClass.name), t => {
+                            //     t.is(expectedException.name, error.name, `Assert that exception [${expectedException.name}] was thrown, but is was not.`);
+                            // });
                         }
 
                         if(notExpectedException && notExpectedException.name) {
-                            test(testClass.visualError(error.stack, testClass.name), t => {
-                                t.not(notExpectedException.name, error.name, `Assert that exception [${notExpectedException.name}] was not thrown, but is was.`);
-                            });
+                            // test(testClass.visualError(error.stack, testClass.name), t => {
+                            //     t.not(notExpectedException.name, error.name, `Assert that exception [${notExpectedException.name}] was not thrown, but is was.`);
+                            // });
                         }
                     } else {
                         throw error;
@@ -279,7 +283,12 @@ module.exports = class TestRunner
         for (let filePath in testFiles) {
             let testClass = new testFiles[filePath]();
             testClass.reporter = this.reporter;
+
+            await this.reporter.beforeEachTest(filePath);
+
         	await this.runTestsInClass(testClass, filePath, location);
+
+            await this.reporter.afterEachTest(this.reporter.results[filePath]);
         }
     }
 
