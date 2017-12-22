@@ -6,6 +6,7 @@ module.exports = class TestCase
 		this.test = null;
 		this.reporter = null;
 		this.firstAssertionHit = true;
+		this.assertions = null;
 
 		this.cleanupAfterSingleTestMethod();
 	}
@@ -30,171 +31,49 @@ module.exports = class TestCase
 
 	}
 
-	async asyncTest(callable)
-	{
-		// await test(async t => {
-		// 	this.beforeAssertion(t);
-
-		// 	await callable(t);
-
-		// 	this.afterAssertion(t);
-		// });
-	}
-
 	pass(message)
 	{
-		// .pass([message])
-		test(this.visualError(), async t => {
-			this.beforeAssertion(t);
-
-			await t.pass(message);
-
-			this.afterAssertion(t);
-		});
+		this.assertions.pass(message);
 	}
 
 	fail(message)
 	{
-		// .fail([message])
-		test(this.visualError(), async t => {
-			this.beforeAssertion(t);
-
-			await t.fail(message);
-
-			this.afterAssertion(t);
-		});
+		this.assertions.fail(message);
 	}
 
 	assertTrue(actual, message)
 	{
-		let result = {};
-
-		this.beforeAssertion();
-
-		// actual = this.normalizeValue(actual);
-
-		let pass = actual == true;
-
-		if (pass) {
-			result.pass = true;
-		} else {
-			result.pass = false;
-			result.error = new Error;
-		}
-
-		this.afterAssertion(result);
-
-		// .truthy(actual, [message])
-		// test(this.visualError(), async t => {
-		// 	this.beforeAssertion(t);
-
-		// 	await t.truthy(actual, message);
-
-		// 	this.afterAssertion(t);
-		// });
+		this.assertions.assertTrue(actual, message);
 	}
 
 	assertFalse(actual, message)
 	{
-		let result = {};
-
-		this.beforeAssertion();
-
-		// actual = this.normalizeValue(actual);
-
-		let pass = actual == false;
-
-		if (pass) {
-			result.pass = true;
-		} else {
-			result.pass = false;
-			result.error = new Error;
-		}
-
-		this.afterAssertion(result);
-
-		// .falsy(actual, [message])
-		// test(this.visualError(), async t => {
-		// 	this.beforeAssertion(t);
-
-		// 	await t.falsy(actual, message);
-
-		// 	this.afterAssertion(t);
-		// });
-	}
-
-	assertDeepEqual(expected, actual, message)
-	{
-		// actual = this.normalizeValue(actual);
-
-		// .deepEqual(actual, expected, [message])
-		// test(this.visualError(), async t => {
-		// 	this.beforeAssertion(t);
-
-		// 	await t.deepEqual(actual, expected, message);
-
-		// 	this.afterAssertion(t);
-		// });
-	}
-
-	assertNotDeepEqual(expected, actual, message)
-	{
-		// actual = this.normalizeValue(actual);
-		let result = {};
-
-		this.beforeAssertion();
-
-		let pass = ! concordance.compare(actual, expected).pass;
-
-		if (pass) {
-			result.pass = true;
-		} else {
-			result.pass = false;
-			result.error = new Error;
-		}
-
-		this.afterAssertion(result);
-
-		// .notDeepEqual(actual, expected, [message])
-		// test(this.visualError(), async t => {
-		// 	this.beforeAssertion(t);
-
-		// 	await t.notDeepEqual(actual, expected, message);
-
-		// 	this.afterAssertion(t);
-		// });
+		this.assertions.assertFalse(actual, message);
 	}
 
 	assertEquals(expected, actual, message)
 	{
-		let result = {};
-
-		this.beforeAssertion();
-
-		let pass = concordance.compare(actual, expected).pass;
-
-		if (pass) {
-			result.pass = true;
-		} else {
-			result.pass = false;
-			result.error = new Error;
-		}
-
-		this.afterAssertion(result);
+		this.assertions.assertEquals(expected, actual, message);
 	}
 
 	assertNotEquals(expected, actual, message)
 	{
-		this.assertNotDeepEqual(expected, actual, message);
+		this.assertions.assertNotEquals(expected, actual, message);
 	}
 
-	assertCount(expected, countable)
+	assertCount(expected, countable, message)
 	{
-		try {
-			this.assertEquals(Object.keys(countable).length, expected);
-		} catch (error) {
-			this.fail(`[${countable}] is not countable.`);
-		}
+		this.assertions.assertCount(expected, countable, message);
+	}
+
+	assertContains(regex, contents, message)
+	{
+		this.assertions.assertContains(regex, contents, message);
+	}
+
+	assertNotContains(regex, contents, message)
+	{
+		this.assertions.assertNotContains(regex, contents, message);
 	}
 
 	expectException(exception, message = null)
@@ -203,126 +82,9 @@ module.exports = class TestCase
 		this.expectedExceptionMessage = message;
 	}
 
-	expectThrows(func, error, message)
-	{
-		// .throws(function|promise, [error, [message]])
-		test(this.visualError(), async t => {
-			this.beforeAssertion(t);
-
-			await t.throws(func, error, message);
-
-			this.afterAssertion(t);
-		});
-	}
-
 	notExpectException(exception)
 	{
 		this.notExpectedException = exception;
-	}
-
-	notExpectThrows(func, error, message)
-	{
-		// .notThrows(function|promise, [message])
-		test(this.visualError(), async t => {
-			this.beforeAssertion(t);
-
-			await t.notThrows(func, error, message);
-
-			this.afterAssertion(t);
-		});
-	}
-
-	assertRegExp(regex, contents, message)
-	{
-		if (typeof regex == 'string') {
-		    regex = new RegExp(regex, 'gim');
-		}
-
-		let result = {};
-
-		this.beforeAssertion();
-
-		let pass = regex.test(contents);
-
-		if (pass) {
-			result.pass = true;
-		} else {
-			result.pass = false;
-			result.error = new Error;
-		}
-
-		this.afterAssertion(result);
-
-		// .regex(contents, regex, [message])
-		// test(this.visualError(), async t => {
-		// 	this.beforeAssertion(t);
-
-		// 	await t.regex(contents, regex, message);
-
-		// 	this.afterAssertion(t);
-		// });
-	}
-
-	assertNotRegExp(regex, contents, message)
-	{
-		if (typeof regex == 'string') {
-		    regex = new RegExp(regex, 'gim');
-		}
-
-		let result = {};
-
-		this.beforeAssertion();
-
-		let pass = ! regex.test(contents);
-
-		if (pass) {
-			result.pass = true;
-		} else {
-			result.pass = false;
-			result.error = new Error;
-		}
-
-		this.afterAssertion(result);
-
-		// .notRegex(contents, regex, [message])
-		// test(this.visualError(), async t => {
-		// 	this.beforeAssertion(t);
-
-		// 	await t.notRegex(contents, regex, message);
-
-		// 	this.afterAssertion(t);
-		// });
-	}
-
-	assertContains(regex, contents, message)
-	{
-		this.assertRegExp(regex, contents, message);
-	}
-
-	assertNotContains(regex, contents, message)
-	{
-		this.assertNotRegExp(regex, contents, message);
-	}
-
-	takeSnapshot(contents, message)
-	{
-		// .snapshot(contents, [message])
-		test(this.visualError(), async t => {
-			this.beforeAssertion(t);
-
-			await t.snapshot(contents, message);
-
-			this.afterAssertion(t);
-		});
-	}
-
-	normalizeValue(value)
-	{
-		if (typeof value == 'object' && value.hasOwnProperty('raw')) {
-			return value.raw;
-		}
-
-		return value;
 	}
 
 	visualError(stack = null, name = null)
@@ -435,25 +197,6 @@ module.exports = class TestCase
 		} else {
 			this.reporter.afterEachFailedAssertion(assertion);
 		}
-
-		// this.reporter.results[test._test.title] = test;
-		// process.send({name, assertion});
-		// let results = {};
-
-		// if (this.firstAssertionHit) {
-		// 	this.firstAssertionHit = false;
-		// 	let [className, testName] = this.name.split(' -> ');
-
-		// 	this.reporter.afterEachTest(className, results);
-		// }
-
-		// this.reporter.afterEachAssertion(test);
-
-		// this.reporter.assertionCount++;
-
-		// if (this.reporter.assertionCount == 48) {
-		// 	this.reporter.afterTest(this.reporter.results);
-		// }
 	}
 
 	cleanupAfterSingleTestMethod()

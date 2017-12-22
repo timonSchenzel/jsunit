@@ -47,12 +47,12 @@ module.exports = class VueComponentTestCase extends TestCase
 
     assertSee(regex, contents, message)
     {
-        this.assertRegExp(regex, contents, message);
+        this.assertContains(regex, contents, message);
     }
 
     assertNotSee(regex, contents, message)
     {
-        this.assertNotRegExp(regex, contents, message);
+        this.assertNotContains(regex, contents, message);
     }
 
     setUp()

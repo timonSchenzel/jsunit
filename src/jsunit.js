@@ -61,6 +61,27 @@ global.stackTrace = require('stack-trace');
 global.Reporter = require('./reporters/Reporter');
 
 /**
+ * Load AssertionResult class.
+ *
+ * @type {Object}
+ */
+global.AssertionResult = require('./AssertionResult');
+
+/**
+ * Load AssertionsProxy class.
+ *
+ * @type {Object}
+ */
+global.AssertionsProxy = require('./AssertionsProxy');
+
+/**
+ * Load Assertions class.
+ *
+ * @type {Object}
+ */
+global.Assertions = new (require('./Assertions'));
+
+/**
  * Load TestCase class.
  *
  * @type {Object}
@@ -96,12 +117,20 @@ let jsUnit = new TestRunner(process);
      * Further it scan all provided locations and get the test classes.
      * @todo: set env stuff.
      */
-    await jsUnit.boot();
+    try {
+        await jsUnit.boot();
+    } catch (error) {
+        console.error(chalk.red(`  ${figures.cross} jsUnit bootstrap error`));
+        console.log(error);
+    }
 
     /**
      * Finally, Run all tests found in all the test classes.
      */
-    await jsUnit.test();
-
-    // console.log(`\n  ${jsUnit.executedTests} test${jsUnit.executedTests != 1 ? 's' : ''}`);
+    try {
+        await jsUnit.test();
+    } catch (error) {
+        console.error(chalk.red(`  ${figures.cross} jsUnit error`));
+        console.log(error);
+    }
 })();

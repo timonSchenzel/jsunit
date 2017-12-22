@@ -158,7 +158,7 @@ module.exports = class VueComponentTester
 
         let html = this.toHtml();
 
-        this.tester.assertRegExp(expression, html, `Assert that "${rawExpression}" should exists on the page, but it was not found.`);
+        this.tester.assertContains(expression, html, `Assert that "${rawExpression}" should exists on the page, but it was not found.`);
 
         return this;
     }

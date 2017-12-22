@@ -9,5 +9,14 @@ module.exports = {
     },
 	files: [
 		"tests"
-	]
+	],
+    // assertionMacros: {
+    //     assertNull: (actual, message) => {
+    //         return new Assertion({
+    //             pass: actual == null,
+    //             message,
+    //         });
+    //     }
+    // },
+    // assertionMacros: './macros'
 }

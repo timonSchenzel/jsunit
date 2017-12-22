@@ -2,8 +2,24 @@ module.exports = class Reporter
 {
     constructor()
     {
+        this.formatTime = require('pretty-ms');
+        this.reporterDate = Date;
+
         this.results = {};
-        this.assertionCount = 0;
+        this.passesResults = {};
+        this.failuresResults = {};
+
+        this.testsCount = 0;
+        this.testsPassesCount = 0;
+        this.testsFailuresCount = 0;
+        this.assertionsCount = 0;
+        this.passesAssertionsCount = 0;
+        this.failuresAssertionsCount = 0;
+
+        this.startTime = null;
+        this.endTime = null;
+        this.executionTime = null;
+        this.executionTimeFormatted = null;
     }
 
     beforeBoot()
@@ -13,17 +29,27 @@ module.exports = class Reporter
 
     afterBoot()
     {
-
+        Assertions.macro('assertNull', (actual, message) => {
+            return new Assertion({
+                pass: actual == null,
+                message,
+            });
+        });
     }
 
     beforeTest()
     {
-
+        this.startTime = new this.reporterDate();
     }
 
     afterTest()
     {
-        // console.log(this.results);
+        this.endTime = new this.reporterDate();
+        this.executionTime = this.endTime - this.startTime;
+        this.executionTimeFormatted = this.formatTime(this.executionTime);
+
+        console.log('');
+        console.log(`  ${this.executionTimeFormatted}`);
     }
 
     beforeEachTest(testName)

@@ -283,6 +283,12 @@ module.exports = class TestRunner
         for (let filePath in testFiles) {
             let testClass = new testFiles[filePath]();
             testClass.reporter = this.reporter;
+            testClass.assertions = Assertions;
+
+            // let testClass = new Proxy(
+            //     testClassInstance,
+            //     AssertionsProxy
+            // );
 
             await this.reporter.beforeEachTest(filePath);
 
