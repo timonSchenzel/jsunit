@@ -1,16 +1,6 @@
 module.exports = {
     get(target, property, receiver)
     {
-        if (typeof target.assertions[property] == 'function') {
-            return function(...args) {
-                return target.assertions[property](...args);
-            };
-        }
-
-        if (target.assertions[property] !== undefined) {
-            return target.assertions[property];
-        }
-
         if (typeof target[property] == 'function') {
             return function(...args) {
                return target[property](...args);
@@ -19,6 +9,16 @@ module.exports = {
 
         if (target[property] !== undefined) {
             return target[property];
+        }
+
+        if (typeof target.assertions[property] == 'function') {
+            return function(...args) {
+                return target.assertions[property](...args);
+            };
+        }
+
+        if (target.assertions[property] !== undefined) {
+            return target.assertions[property];
         }
     }
 };

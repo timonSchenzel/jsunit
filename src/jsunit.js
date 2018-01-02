@@ -53,33 +53,14 @@ global.sinon = require('sinon');
  */
 global.stackTrace = require('stack-trace');
 
+global.AssertionResult = require('./AssertionResult');
+
 /**
  * Load Reporter class.
  *
  * @type {Object}
  */
 global.Reporter = require('./reporters/Reporter');
-
-/**
- * Load AssertionResult class.
- *
- * @type {Object}
- */
-global.AssertionResult = require('./AssertionResult');
-
-/**
- * Load AssertionsProxy class.
- *
- * @type {Object}
- */
-global.AssertionsProxy = require('./AssertionsProxy');
-
-/**
- * Load Assertions class.
- *
- * @type {Object}
- */
-global.Assertions = new (require('./Assertions'));
 
 /**
  * Load TestCase class.
@@ -112,7 +93,7 @@ let jsUnit = new TestRunner(process);
 
 (async () => {
     /**
-     * Boot jsUnit, basically this will read the config file "jsunit.json".
+     * Boot jsUnit, basically this will read the config file "jsunit.js".
      * If a bootstrap file is provided it will load this fill.
      * Further it scan all provided locations and get the test classes.
      * @todo: set env stuff.

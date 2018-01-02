@@ -191,7 +191,6 @@ module.exports = class TestCase
 
 		this.reporter.afterEachAssertion(assertion);
 
-
 		if (assertion.pass) {
 			this.reporter.afterEachPassedAssertion(assertion);
 		} else {

@@ -76,6 +76,17 @@ module.exports = class TestRunner
         }
     }
 
+    loadAssertions()
+    {
+        this.assertions = new (require('./Assertions'))(this.reporter);
+        this.assertions.build();
+
+        // this.assertions = new Proxy(
+        //     ,
+        //     require('./AssertionsProxy')
+        // );
+    }
+
 	parseFilter(rawFilter = '')
 	{
 		let searchFilter = rawFilter.match(/"((?:\\.|[^"\\])*)"/);
@@ -147,6 +158,8 @@ module.exports = class TestRunner
 		}
 
 		this.getTestLocations();
+
+        this.loadAssertions();
 
         await this.reporter.afterBoot();
 	}
@@ -283,12 +296,7 @@ module.exports = class TestRunner
         for (let filePath in testFiles) {
             let testClass = new testFiles[filePath]();
             testClass.reporter = this.reporter;
-            testClass.assertions = Assertions;
-
-            // let testClass = new Proxy(
-            //     testClassInstance,
-            //     AssertionsProxy
-            // );
+            testClass.assertions = this.assertions;
 
             await this.reporter.beforeEachTest(filePath);
 

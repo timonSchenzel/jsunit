@@ -29,12 +29,12 @@ module.exports = class Reporter
 
     afterBoot()
     {
-        Assertions.macro('assertNull', (actual, message) => {
-            return new Assertion({
-                pass: actual == null,
-                message,
-            });
-        });
+        // Assertions.macro('assertNull', (actual, message) => {
+        //     return new Assertion({
+        //         pass: actual == null,
+        //         message,
+        //     });
+        // });
     }
 
     beforeTest()
