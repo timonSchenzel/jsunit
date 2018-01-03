@@ -53,7 +53,7 @@ module.exports = class Reporter
         console.log(`  ${this.errorContent} `);
 
         console.log('');
-        console.log(`Time: ${this.executionTimeFormatted}`);
+        console.log(`  ${this.executionTimeFormatted}`);
     }
 
     beforeEachTest(testName)
