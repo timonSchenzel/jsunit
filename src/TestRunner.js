@@ -14,9 +14,11 @@ module.exports = class TestRunner
 
 		this.process = processData;
 
-		this.root = processData.env.PWD + '/';
+        this.root = this.pathModule.normalize(
+            this.process.cwd() + '/'
+        );
 
-		this.pwd = processData.env.PWD + '/';
+		this.pwd = this.root;
 
         this.firstAssertionHit = true;
 
