@@ -13,7 +13,7 @@ module.exports = {
 
         if (typeof target.assertions[property] == 'function') {
             return function(...args) {
-                return target.assertions[property](...args);
+                return target.execute(property, args);
             };
         }
 

@@ -8,6 +8,7 @@ module.exports = class Reporter
         this.results = {};
         this.passesResults = {};
         this.failuresResults = {};
+        this.errorContent = '';
 
         this.testsCount = 0;
         this.testsPassesCount = 0;
@@ -49,7 +50,10 @@ module.exports = class Reporter
         this.executionTimeFormatted = this.formatTime(this.executionTime);
 
         console.log('');
-        console.log(`  ${this.executionTimeFormatted}`);
+        console.log(`  ${this.errorContent} `);
+
+        console.log('');
+        console.log(`Time: ${this.executionTimeFormatted}`);
     }
 
     beforeEachTest(testName)
@@ -86,7 +90,13 @@ module.exports = class Reporter
 
     afterEachFailedAssertion(assertion)
     {
+        this.testsFailuresCount++;
 
+        this.errorContent += `${this.testsFailuresCount}) ${assertion.test.file} -> ${assertion.test.function}`;
+        this.errorContent += '\n';
+        this.errorContent += `  ${assertion.error.fileName}`;
+        this.errorContent += '\n';
+        this.errorContent += `  ${this.visualError(assertion)}`;
     }
 
     afterEachPassedAssertion(assertion)
@@ -102,5 +112,64 @@ module.exports = class Reporter
     appendLog(message)
     {
         process.stdout.write(message);
+    }
+
+    visualError(assertion)
+    {
+      const codeExcerpt = require('code-excerpt');
+      const equalLength = require('equal-length');
+      const truncate = require('cli-truncate');
+      const colors = require('ava/lib/colors');
+      const indentString = require('indent-string');
+      const formatLineNumber = (lineNumber, maxLineNumber) =>
+        ' '.repeat(Math.max(0, String(maxLineNumber).length - String(lineNumber).length)) + lineNumber;
+
+      const maxWidth = 80;
+
+      let fileName = assertion.error.fileName;
+      let lineNumber = assertion.error.lineNumber;
+
+      let sourceInput = {};
+      sourceInput.file = fileName;
+      sourceInput.line = lineNumber;
+      sourceInput.isDependency = false;
+      sourceInput.isWithinProject = true;
+
+      let contents = fs.readFileSync(sourceInput.file, 'utf8');
+      const excerpt = codeExcerpt(contents, sourceInput.line, {maxWidth: process.stdout.columns, around: 1});
+
+      if (!excerpt) {
+        return null;
+      }
+
+      const file = sourceInput.file;
+      const line = sourceInput.line;
+
+      const lines = excerpt.map(item => ({
+        line: item.line,
+        value: truncate(item.value, maxWidth - String(line).length - 5)
+      }));
+
+      const joinedLines = lines.map(line => line.value).join('\n');
+      const extendedLines = equalLength(joinedLines).split('\n');
+
+      let errorContent = lines
+        .map((item, index) => ({
+          line: item.line,
+          value: extendedLines[index]
+        }))
+        .map(item => {
+          const isErrorSource = item.line === line;
+
+          const lineNumber = formatLineNumber(item.line, line) + ':';
+          const coloredLineNumber = isErrorSource ? lineNumber : chalk.dim(lineNumber);
+          const result = `   ${coloredLineNumber} ${item.value}`;
+
+          return isErrorSource ? chalk.bgRed(result) : result;
+        })
+        .join('\n');
+
+      errorContent = errorContent.substring(2);
+      return errorContent;
     }
 }

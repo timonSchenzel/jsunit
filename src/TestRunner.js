@@ -78,13 +78,10 @@ module.exports = class TestRunner
 
     loadAssertions()
     {
-        this.assertions = new (require('./Assertions'))(this.reporter);
-        this.assertions.build();
-
-        // this.assertions = new Proxy(
-        //     ,
-        //     require('./AssertionsProxy')
-        // );
+        this.assertions = new Proxy(
+            new (require('./Assertions'))(this.reporter),
+            require('./AssertionsProxy')
+        );
     }
 
 	parseFilter(rawFilter = '')
@@ -240,6 +237,7 @@ module.exports = class TestRunner
             }
 
             testClass.test = { file: path, function: name };
+            testClass.assertions.test = { file: path, function: name };
 
             try {
                 await testClass[name]();

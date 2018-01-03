@@ -29,6 +29,7 @@ module.exports = class CountdownTest extends VueComponentTestCase
         this.component.assertSee('9 Seconds');
 
         this.component.fastForward('4s');
+
         this.component.assertSee('5 Seconds');
     }
 

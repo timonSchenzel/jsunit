@@ -3,91 +3,101 @@ module.exports = class Assertions
 	constructor(reporter)
 	{
 		this.reporter = reporter;
+		this.test = {};
 
 		this.assertions = {
-			pass: (message) =>
-			{
-				return {
-					pass: true,
-					message,
-				};
-			},
+		    pass: (message) =>
+		    {
+		        return {
+		            pass: true,
+		            message,
+		        };
+		    },
 
-			fail: (message) =>
-			{
-				return {
-					pass: false,
-					message,
-				};
-			},
+		    fail: (message) =>
+		    {
+		        return {
+		            pass: false,
+		            message,
+		        };
+		    },
 
-			assertTrue: (actual, message) =>
-			{
-				return {
-					pass: actual == true,
-					message,
-				};
-			},
+		    assertTrue: (actual, message) =>
+		    {
+		        return {
+		            pass: actual == true,
+		            message,
+		            expected: true,
+		            actual,
+		        };
+		    },
 
-			assertFalse: (actual, message) =>
-			{
-				return {
-					pass: actual == false,
-					message,
-				};
-			},
+		    assertFalse: (actual, message) =>
+		    {
+		        return {
+		            pass: actual == false,
+		            message,
+		            expected: false,
+		            actual,
+		        };
+		    },
 
-			assertEquals: (expected, actual, message) =>
-			{
-				return {
-					pass: concordance.compare(actual, expected).pass == true,
-					message,
-				};
-			},
+		    assertEquals: (expected, actual, message) =>
+		    {
+		        return {
+		            pass: concordance.compare(actual, expected).pass == true,
+		            message,
+		            expected,
+		            actual,
+		        };
+		    },
 
-			assertNotEquals: (expected, actual, message) =>
-			{
-				return {
-					pass: concordance.compare(actual, expected).pass == false,
-					message,
-				};
-			},
+		    assertNotEquals: (expected, actual, message) =>
+		    {
+		        return {
+		            pass: concordance.compare(actual, expected).pass == false,
+		            message,
+		            expected,
+		            actual,
+		        };
+		    },
 
-			assertCount: (expected, countable, message) =>
-			{
-				try {
-					return {
-						pass: this.assertEquals(Object.keys(countable).length, expected),
-						message,
-					};
-				} catch (error) {
-					return this.fail(`[${countable}] is not countable.`);
-				}
-			},
+		    assertCount: (expected, countable, message) =>
+		    {
+		        try {
+		            return this.pipe('assertEquals', [expected, Object.keys(countable).length, message]);
+		        } catch (error) {
+		            return this.pipe('fail', [`[${countable}] is not countable.`]);
+		        }
+		    },
 
-			assertContains: (regex, contents, message) =>
-			{
-				if (typeof regex == 'string') {
-				    regex = new RegExp(regex, 'gim');
-				}
+		    assertContains: (regex, contents, message) =>
+		    {
+		        if (typeof regex == 'string') {
+		            regex = new RegExp(regex, 'gim');
+		        }
 
-				return {
-					pass: regex.test(contents) == true,
-					message,
-				};
-			},
+		        return {
+		            pass: regex.test(contents) == true,
+		            message,
+		            contents,
+		            regex,
+		        };
+		    },
 
-			assertNotContains: (regex, contents, message) =>
-			{
-				if (typeof regex == 'string') {
-				    regex = new RegExp(regex, 'gim');
-				}
+		    assertNotContains: (regex, contents, message) =>
+		    {
+		        if (typeof regex == 'string') {
+		            regex = new RegExp(regex, 'gim');
+		        }
 
-				return {
-					pass: regex.test(contents) == false,
-					message,
-				};
-			}
+		        return {
+		            pass: regex.test(contents) == false,
+		            message,
+		            contents,
+		            regex,
+		        };
+		    }
 		};
 	}
 
@@ -96,94 +106,29 @@ module.exports = class Assertions
 		this.assertions[name] = assertion;
 	}
 
-	build()
+	execute(assertion, parameters)
 	{
-		for (var assertion in this.assertions) {
-			this[assertion] = this.assertions[assertion];
-		}
+		this.reporter.beforeEachAssertion(assertion, parameters);
+
+	    let assertionResult = new AssertionResult(
+	    	assertion,
+	    	this.test,
+	    	this.assertions[assertion](...parameters)
+	    );
+
+	    this.reporter.afterEachAssertion(assertionResult);
+
+	    if (assertionResult.passed()) {
+	    	this.reporter.afterEachPassedAssertion(assertionResult);
+	    } else {
+	    	this.reporter.afterEachFailedAssertion(assertionResult);
+	    }
+
+	    return assertionResult;
 	}
 
-	// pass(message)
-	// {
-	// 	return new AssertionResult({
-	// 		pass: true,
-	// 		message,
-	// 	});
-	// }
-
-	// fail(message)
-	// {
-	// 	return new AssertionResult({
-	// 		pass: false,
-	// 		message,
-	// 	});
-	// }
-
-	// assertTrue(actual, message)
-	// {
-	// 	return new AssertionResult({
-	// 		pass: actual == true,
-	// 		message,
-	// 	});
-	// }
-
-	// assertFalse(actual, message)
-	// {
-	// 	return new AssertionResult({
-	// 		pass: actual == false,
-	// 		message,
-	// 	});
-	// }
-
-	// assertEquals(expected, actual, message)
-	// {
-	// 	return new AssertionResult({
-	// 		pass: concordance.compare(actual, expected).pass == true,
-	// 		message,
-	// 	});
-	// }
-
-	// assertNotEquals(expected, actual, message)
-	// {
-	// 	return new AssertionResult({
-	// 		pass: concordance.compare(actual, expected).pass == false,
-	// 		message,
-	// 	});
-	// }
-
-	// assertCount(expected, countable, message)
-	// {
-	// 	try {
-	// 		return new AssertionResult({
-	// 			pass: this.assertEquals(Object.keys(countable).length, expected),
-	// 			message,
-	// 		});
-	// 	} catch (error) {
-	// 		return this.fail(`[${countable}] is not countable.`);
-	// 	}
-	// }
-
-	// assertContains(regex, contents, message)
-	// {
-	// 	if (typeof regex == 'string') {
-	// 	    regex = new RegExp(regex, 'gim');
-	// 	}
-
-	// 	return new AssertionResult({
-	// 		pass: regex.test(contents) == true,
-	// 		message,
-	// 	});
-	// }
-
-	// assertNotContains(regex, contents, message)
-	// {
-	// 	if (typeof regex == 'string') {
-	// 	    regex = new RegExp(regex, 'gim');
-	// 	}
-
-	// 	return new AssertionResult({
-	// 		pass: regex.test(contents) == false,
-	// 		message,
-	// 	});
-	// }
+	pipe(assertion, parameters)
+	{
+	    return this.assertions[assertion](...parameters);
+	}
 }
