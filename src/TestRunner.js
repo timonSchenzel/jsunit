@@ -302,7 +302,15 @@ module.exports = class TestRunner
 
         	await this.runTestsInClass(testClass, filePath, location);
 
-            await this.reporter.afterEachTest(this.reporter.results[filePath]);
+            let testFailuresCount = this.reporter.testFailures[filePath];
+
+            await this.reporter.afterEachTest(filePath, this.reporter.results[filePath], testFailuresCount);
+
+            if (testFailuresCount > 0) {
+                await this.reporter.afterEachFailedTest(filePath, this.reporter.results[filePath], testFailuresCount);
+            } else {
+                await this.reporter.afterEachPassedTest(filePath, this.reporter.results[filePath], testFailuresCount);
+            }
         }
     }
 
