@@ -75,4 +75,21 @@ module.exports = class CoreAssertionsTest extends TestCase
     {
         this.assertNotContains('foo', 'bar');
     }
+
+    /** test */
+    async it_is_able_to_run_async_await_code()
+    {
+        let promiseResult = await this.promiseCall();
+
+        this.assertEquals(promiseResult, 'foo');
+    }
+
+    async promiseCall()
+    {
+        return new Promise((resolve, reject) => {
+            setTimeout(() => {
+                resolve('foo');
+            }, 10);
+        });
+    }
 }

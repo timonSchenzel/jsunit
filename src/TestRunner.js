@@ -80,10 +80,12 @@ module.exports = class TestRunner
 
     loadAssertions()
     {
-        this.assertions = new Proxy(
+        global.Assertions = new Proxy(
             new (require('./assertions/Assertions'))(this.reporter),
             require('./assertions/AssertionsProxy')
         );
+
+        this.assertions = Assertions;
     }
 
 	parseFilter(rawFilter = '')

@@ -12,6 +12,7 @@ module.exports = class AssertionResult
         this.contents = result['contents'];
         this.regex = result['regex'];
 		this.failureMessage = result['failureMessage'];
+
         delete result['pass'];
         delete result['actual'];
         delete result['expected'];
@@ -19,7 +20,9 @@ module.exports = class AssertionResult
         delete result['failureMessage'];
         delete result['contents'];
 		delete result['regex'];
+
 		this.result = result;
+        this.error = null;
 
         let stack = stackTrace.get();
 
@@ -38,6 +41,10 @@ module.exports = class AssertionResult
                     isNative: stackItem.isNative(),
                 };
             })[0];
+
+            if (! this.error) {
+                this.error = {};
+            }
 
             this.error.raw = rawError;
         }

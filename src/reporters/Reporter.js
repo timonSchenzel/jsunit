@@ -152,6 +152,10 @@ module.exports = class Reporter
 
     visualError(assertion)
     {
+        if (! assertion.error.fileName) {
+            return '';
+        }
+
         const codeExcerpt = require('code-excerpt');
         const equalLength = require('equal-length');
         const truncate = require('cli-truncate');
