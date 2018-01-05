@@ -5,6 +5,8 @@ let startDate = new Date();
 
 let annotations = require('./utilities/annotations');
 
+global.path = require('path');
+
 /**
  * Load fs module.
  *
@@ -53,7 +55,7 @@ global.sinon = require('sinon');
  */
 global.stackTrace = require('stack-trace');
 
-global.AssertionResult = require('./AssertionResult');
+global.AssertionResult = require('./assertions/AssertionResult');
 
 /**
  * Load Reporter class.

@@ -29,6 +29,7 @@ module.exports = class Assertions
 		            message,
 		            expected: true,
 		            actual,
+		            failureMessage: 'Value is not truthy',
 		        };
 		    },
 
@@ -39,6 +40,7 @@ module.exports = class Assertions
 		            message,
 		            expected: false,
 		            actual,
+		            failureMessage: 'Value is not falsy',
 		        };
 		    },
 
@@ -110,11 +112,29 @@ module.exports = class Assertions
 	{
 		this.reporter.beforeEachAssertion(assertion, parameters);
 
-	    let assertionResult = new AssertionResult(
-	    	assertion,
-	    	this.test,
-	    	this.assertions[assertion](...parameters)
-	    );
+		let assertionResultFileName = assertion.charAt(0).toUpperCase() + assertion.substr(1);
+		let assertionResult = null;
+
+		let rootFolder = path.normalize(
+		    process.cwd() + '/'
+		);
+
+		let assertionResultFileLocation = `${rootFolder}src/assertions/results/${assertionResultFileName}Result.js`;
+
+		if (fs.existsSync(assertionResultFileLocation)) {
+			let assertionClass = require(assertionResultFileLocation);
+			assertionResult = new assertionClass(
+				assertion,
+				this.test,
+				this.assertions[assertion](...parameters)
+			);
+		} else {
+			assertionResult = new AssertionResult(
+				assertion,
+				this.test,
+				this.assertions[assertion](...parameters)
+			);
+		}
 
 	    this.reporter.afterEachAssertion(assertionResult);
 

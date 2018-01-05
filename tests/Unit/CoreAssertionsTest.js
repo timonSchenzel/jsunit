@@ -65,6 +65,12 @@ module.exports = class CoreAssertionsTest extends TestCase
     }
 
     /** @test */
+    it_is_able_assert_that_a_string_contains_some_string()
+    {
+        this.assertContains('bar', 'foobar');
+    }
+
+    /** @test */
     it_is_able_assert_that_a_string_not_contains_some_string()
     {
         this.assertNotContains('foo', 'bar');

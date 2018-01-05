@@ -81,8 +81,8 @@ module.exports = class TestRunner
     loadAssertions()
     {
         this.assertions = new Proxy(
-            new (require('./Assertions'))(this.reporter),
-            require('./AssertionsProxy')
+            new (require('./assertions/Assertions'))(this.reporter),
+            require('./assertions/AssertionsProxy')
         );
     }
 
@@ -309,7 +309,7 @@ module.exports = class TestRunner
             if (testFailuresCount > 0) {
                 await this.reporter.afterEachFailedTest(filePath, this.reporter.results[filePath], testFailuresCount);
             } else {
-                await this.reporter.afterEachPassedTest(filePath, this.reporter.results[filePath], testFailuresCount);
+                await this.reporter.afterEachPassedTest(filePath, this.reporter.results[filePath]);
             }
         }
     }

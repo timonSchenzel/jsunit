@@ -87,7 +87,7 @@ module.exports = class Reporter
         this.testsFailuresCount++;
     }
 
-    afterEachPassedTest(testName, results, failuresCount)
+    afterEachPassedTest(testName, results)
     {
         this.testsPassesCount++;
     }
@@ -124,12 +124,14 @@ module.exports = class Reporter
         this.assertionsFailuresCount++;
 
         this.errorContent += '\n';
-        this.errorContent += chalk.red('x') + chalk.white(` ${this.assertionsFailuresCount}) ${assertion.test.file} -> ${assertion.test.function}`);
+        this.errorContent += '  ' + chalk.red('x') + chalk.white(` ${this.assertionsFailuresCount}) ${assertion.test.file} -> ${assertion.test.function}`);
         this.errorContent += '\n';
         this.errorContent += chalk.dim(`  ${assertion.error.fileName}:${assertion.error.lineNumber}`);
         this.errorContent += '\n';
         this.errorContent += '\n';
         this.errorContent += `  ${this.visualError(assertion)}`;
+        this.errorContent += '\n\n';
+        this.errorContent += `${assertion.getFailureMessage()}`;
         this.errorContent += '\n';
     }
 

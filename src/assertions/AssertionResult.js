@@ -5,8 +5,20 @@ module.exports = class AssertionResult
         this.assertion = assertion;
         this.test = test;
         this.pass = result['pass'];
-		this.failed = ! result['pass'];
-		delete result['pass'];
+        this.failed = ! result['pass'];
+        this.actual = result['actual'];
+        this.expected = result['expected'];
+        this.message = result['message'];
+        this.contents = result['contents'];
+        this.regex = result['regex'];
+		this.failureMessage = result['failureMessage'];
+        delete result['pass'];
+        delete result['actual'];
+        delete result['expected'];
+        delete result['message'];
+        delete result['failureMessage'];
+        delete result['contents'];
+		delete result['regex'];
 		this.result = result;
 
         let stack = stackTrace.get();
@@ -39,5 +51,23 @@ module.exports = class AssertionResult
     failed()
     {
         return this.failed == true;
+    }
+
+    getFailureMessage()
+    {
+        let message = '';
+
+        if (this.message) {
+            message = `  ${this.message}\n\n`;
+        }
+
+        message += `  ${this.describeFailure()}`;
+
+        return message;
+    }
+
+    describeFailure()
+    {
+        return `${this.failureMessage}:\n\n  ${this.actual}`;
     }
 }
