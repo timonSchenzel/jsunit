@@ -115,6 +115,13 @@ module.exports = class VueComponentTester
         return props;
     }
 
+    setProps(props)
+    {
+        this.wrapper.setProps(props);
+
+        return this;
+    }
+
     static test(testCaseInstance, template, props)
     {
         let tester = new this(testCaseInstance, template, props);

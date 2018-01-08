@@ -44,14 +44,11 @@ module.exports = class CountdownTest extends VueComponentTestCase
     /** @test */
     it_is_possible_to_specify_a_custom_expired_message()
     {
-        let component = this.render('<countdown :until="until" :expiredText="expiredTest"></countdown>', {
-            until: this.until,
-            expiredText: 'Contest is over.',
-        });
+        this.component.setProps({ expiredText: 'Contest is over.' });
 
-        component.fastForward('10s');
+        this.component.fastForward('10s');
 
-        component.assertSee('Contest is over.');
+        this.component.assertSee('Contest is over.');
     }
 
 

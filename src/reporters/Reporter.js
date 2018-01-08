@@ -175,7 +175,7 @@ module.exports = class Reporter
         sourceInput.isWithinProject = true;
 
         let contents = fs.readFileSync(sourceInput.file, 'utf8');
-        const excerpt = codeExcerpt(contents, sourceInput.line, {maxWidth: process.stdout.columns, around: 1});
+        const excerpt = codeExcerpt(contents, sourceInput.line, { around: 1 });
 
         if (!excerpt) {
             return null;
@@ -186,7 +186,7 @@ module.exports = class Reporter
 
         const lines = excerpt.map(item => ({
             line: item.line,
-            value: truncate(item.value, maxWidth - String(line).length - 5)
+            value: item.value,
         }));
 
         const joinedLines = lines.map(line => line.value).join('\n');
