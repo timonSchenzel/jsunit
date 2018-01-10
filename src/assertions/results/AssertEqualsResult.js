@@ -2,6 +2,6 @@ module.exports = class AssertTrueResult extends AssertionResult
 {
     describeFailure()
     {
-        return `--- Expected\n  +++ Actual\n  @@ @@\n  - ${this.expected}\n  + ${this.actual}`;
+        return `--- Expected\n  +++ Actual\n  @@ @@\n  - ${this.beautify(this.expected)}\n  + ${this.beautify(this.actual)}\n  Difference\n  ${this.visualDifference()}`;
     }
 }

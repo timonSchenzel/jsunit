@@ -2,7 +2,10 @@ module.exports = class Reporter
 {
     constructor()
     {
+        this.ansiStyles = require('ansi-styles');
         this.formatTime = require('pretty-ms');
+        this.concordance = require('concordance');
+        this.forceColor = new chalk.constructor({enabled: true});
         this.reporterDate = Date;
 
         this.results = {};
@@ -23,6 +26,111 @@ module.exports = class Reporter
         this.endTime = null;
         this.executionTime = null;
         this.executionTimeFormatted = null;
+
+        this.theme = {
+            boolean: this.ansiStyles.yellow,
+            circular: this.forceColor.grey('[Circular]'),
+            date: {
+                invalid: this.forceColor.red('invalid'),
+                value: this.ansiStyles.blue
+            },
+            diffGutters: {
+                actual: this.forceColor.red('-') + ' ',
+                expected: this.forceColor.green('+') + ' ',
+                padding: '  '
+            },
+            error: {
+                ctor: {open: this.ansiStyles.grey.open + '(', close: ')' + this.ansiStyles.grey.close},
+                name: this.ansiStyles.magenta
+            },
+            function: {
+                name: this.ansiStyles.blue,
+                stringTag: this.ansiStyles.magenta
+            },
+            global: this.ansiStyles.magenta,
+            item: {after: this.forceColor.grey(',')},
+            list: {openBracket: this.forceColor.grey('['), closeBracket: this.forceColor.grey(']')},
+            mapEntry: {after: this.forceColor.grey(',')},
+            maxDepth: this.forceColor.grey('…'),
+            null: this.ansiStyles.yellow,
+            number: this.ansiStyles.yellow,
+            object: {
+                openBracket: this.forceColor.grey('{'),
+                closeBracket: this.forceColor.grey('}'),
+                ctor: this.ansiStyles.magenta,
+                stringTag: {open: this.ansiStyles.magenta.open + '@', close: this.ansiStyles.magenta.close},
+                secondaryStringTag: {open: this.ansiStyles.grey.open + '@', close: this.ansiStyles.grey.close}
+            },
+            property: {
+                after: this.forceColor.grey(','),
+                keyBracket: {open: this.forceColor.grey('['), close: this.forceColor.grey(']')},
+                valueFallback: this.forceColor.grey('…')
+            },
+            react: {
+                functionType: this.forceColor.grey('\u235F'),
+                openTag: {
+                    start: this.forceColor.grey('<'),
+                    end: this.forceColor.grey('>'),
+                    selfClose: this.forceColor.grey('/'),
+                    selfCloseVoid: ' ' + this.forceColor.grey('/')
+                },
+                closeTag: {
+                    open: this.forceColor.grey('</'),
+                    close: this.forceColor.grey('>')
+                },
+                tagName: this.ansiStyles.magenta,
+                attribute: {
+                    separator: '=',
+                    value: {
+                        openBracket: this.forceColor.grey('{'),
+                        closeBracket: this.forceColor.grey('}'),
+                        string: {
+                            line: {open: this.forceColor.blue('"'), close: this.forceColor.blue('"'), escapeQuote: '"'}
+                        }
+                    }
+                },
+                child: {
+                    openBracket: this.forceColor.grey('{'),
+                    closeBracket: this.forceColor.grey('}')
+                }
+            },
+            regexp: {
+                source: {open: this.ansiStyles.blue.open + '/', close: '/' + this.ansiStyles.blue.close},
+                flags: this.ansiStyles.yellow
+            },
+            stats: {separator: this.forceColor.grey('---')},
+            string: {
+                open: this.ansiStyles.blue.open,
+                close: this.ansiStyles.blue.close,
+                line: {open: this.forceColor.blue('\''), close: this.forceColor.blue('\'')},
+                multiline: {start: this.forceColor.blue('`'), end: this.forceColor.blue('`')},
+                controlPicture: this.ansiStyles.grey,
+                diff: {
+                    insert: {
+                        open: this.ansiStyles.bgGreen.open + this.ansiStyles.black.open,
+                        close: this.ansiStyles.black.close + this.ansiStyles.bgGreen.close
+                    },
+                    delete: {
+                        open: this.ansiStyles.bgRed.open + this.ansiStyles.black.open,
+                        close: this.ansiStyles.black.close + this.ansiStyles.bgRed.close
+                    },
+                    equal: this.ansiStyles.blue,
+                    insertLine: {
+                        open: this.ansiStyles.green.open,
+                        close: this.ansiStyles.green.close
+                    },
+                    deleteLine: {
+                        open: this.ansiStyles.red.open,
+                        close: this.ansiStyles.red.close
+                    }
+                }
+            },
+            symbol: this.ansiStyles.yellow,
+            typedArray: {
+                bytes: this.ansiStyles.yellow
+            },
+            undefined: this.ansiStyles.yellow
+        };
     }
 
     beforeBoot()
@@ -148,6 +256,18 @@ module.exports = class Reporter
     appendLog(message)
     {
         process.stdout.write(message);
+    }
+
+    visualDifference(actual, expected)
+    {
+        return this.concordance.diff(actual, expected, {plugins: [], theme: this.theme})
+            .split('\n').join('\n  ');
+    }
+
+    beautify(value)
+    {
+        return this.concordance.format(value, {plugins: [], theme: this.theme})
+            .split('\n').join('\n  ');
     }
 
     visualError(assertion)

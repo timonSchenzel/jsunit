@@ -1,9 +1,10 @@
 module.exports = class AssertionResult
 {
-	constructor(assertion, test, result = {})
+	constructor(assertion, test, reporter, result = {})
 	{
         this.assertion = assertion;
         this.test = test;
+        this.reporter = reporter;
         this.pass = result['pass'];
         this.failed = ! result['pass'];
         this.actual = result['actual'];
@@ -75,6 +76,16 @@ module.exports = class AssertionResult
 
     describeFailure()
     {
-        return `${this.failureMessage}:\n\n  ${this.actual}`;
+        return `${this.failureMessage}:\n\n  ${this.beautify(this.actual)}`;
+    }
+
+    visualDifference()
+    {
+        return this.reporter.visualDifference(this.actual, this.expected);
+    }
+
+    beautify(value)
+    {
+        return this.reporter.beautify(value);
     }
 }

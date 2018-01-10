@@ -1,6 +1,20 @@
 module.exports = class CoreAssertionsTest extends TestCase
 {
     /** @test */
+    test_html()
+    {
+        this.assertEquals(`
+            <div>
+                <h1>Foo</h1>
+            </div>
+        `, `
+            <div>
+                <h1>Bar</h1>
+            </div>
+        `);
+    }
+
+    /** @test */
     it_is_able_to_assert_true()
     {
         this.assertTrue(true);

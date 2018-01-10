@@ -126,13 +126,15 @@ module.exports = class Assertions
 			assertionResult = new assertionClass(
 				assertion,
 				this.test,
-				this.assertions[assertion](...parameters)
+				this.reporter,
+				this.assertions[assertion](...parameters),
 			);
 		} else {
 			assertionResult = new AssertionResult(
 				assertion,
 				this.test,
-				this.assertions[assertion](...parameters)
+				this.reporter,
+				this.assertions[assertion](...parameters),
 			);
 		}
 
