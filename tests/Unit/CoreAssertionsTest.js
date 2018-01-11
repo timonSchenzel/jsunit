@@ -1,8 +1,19 @@
+const foo = class Foo
+{
+    constructor()
+    {
+        this.foo = 'bar';
+    }
+}
+
 module.exports = class CoreAssertionsTest extends TestCase
 {
     /** @test */
     test_html()
     {
+        const fooInstance = new foo;
+        dd(`<div><h1>Foo</h1></div>`);
+
         this.assertEquals(`
             <div>
                 <h1>Foo</h1>

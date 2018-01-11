@@ -17,6 +17,7 @@ global.safeEval = require('safe-eval');
  * Load concordance package, Compare, format, diff and serialize any JavaScript value.
  */
 global.concordance = require('concordance');
+
 /**
  * Load figures package, will make unicode symbols available for terminal/cmd.
  */

@@ -70,6 +70,15 @@ module.exports = class TestRunner
             if (typeof reporter == 'function') {
                 this.reporter = reporter;
             }
+
+            global.dump = (data) => {
+                console.log(this.reporter.beautify(data));
+            }
+
+            global.dd = (data) => {
+                global.dump(data);
+                process.exit(0);
+            }
         } catch (error) {
             console.error(chalk.red(`  ${figures.cross} jsUnit error`));
             console.error(error);

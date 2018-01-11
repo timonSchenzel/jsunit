@@ -109,17 +109,29 @@ const theme = {
     undefined: ansiStyles.yellow
 };
 
-console.log(concordance.format);
+// console.log(concordance.format);
+
+const foo = class Foo
+{
+    constructor()
+    {
+        this.foo = 'bar';
+    }
+}
+
+const fooInstance = new foo;
 
 const formatted = concordance.format('/foo bar/gim', {maxDepth: 3, plugins: [], theme});
 const formatted2 = concordance.format([1, 2, 3], {maxDepth: 3, plugins: [], theme});
 const formatted3 = concordance.format(safeEval('[1, 2, 3]'), {maxDepth: 3, plugins: [], theme});
+const formatted4 = concordance.format(foo, {maxDepth: 3, plugins: [], theme});
 
 const difference = concordance.diff('foo bar', 'bar', {maxDepth: 3, plugins: [], theme});
 const difference2 = concordance.diff([1, 2, 3], [1, 2, 3, 4], {maxDepth: 3, plugins: [], theme});
-console.log(formatted);
-console.log(formatted2);
-console.log(formatted3);
+// console.log(formatted);
+// console.log(formatted2);
+// console.log(formatted3);
+console.log(formatted4);
 
-console.log(difference);
-console.log(difference2);
+// console.log(difference);
+// console.log(difference2);
