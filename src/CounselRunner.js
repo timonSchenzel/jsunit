@@ -1,30 +1,29 @@
-module.exports = class TestRunner
+module.exports = class CounselRunner
 {
-	constructor(processData)
+	constructor()
 	{
-		this.configFile = 'jsunit.js';
+        require('jsdom-global')();
 
-		this.fs = require('fs');
+		this.configFile = 'counsel.js';
 
-		this.pathModule = require('path');
+        this.serviceProviders = {};
 
-		this.fileLoader = require('auto-loader');
-
-		this.annotations = require('./utilities/annotations');
-
-		this.process = processData;
-
-        this.root = this.pathModule.normalize(
-            this.process.cwd() + '/'
-        );
-
-		this.pwd = this.root;
-
-        this.firstAssertionHit = true;
-
-        this.totalAssertions = 0;
-
-        this.executedTests = 0;
+        this.serviceProvidersList = {
+            path: 'path',
+            fs: 'fs',
+            fileLoader: 'auto-loader',
+            concordance: 'concordance',
+            figures: 'figures',
+            cheerio: 'cheerio',
+            moment: 'moment',
+            sinon: 'sinon',
+            stackTrace: 'stack-trace',
+            chalk: 'chalk',
+            annotations: './utilities/annotations',
+            assertionResult: './assertions/AssertionResult',
+            reporter: './reporters/Reporter',
+            testCase: './TestCase',
+        };
 
         this.reporter = null;
 
@@ -32,12 +31,10 @@ module.exports = class TestRunner
 
 		this.locations = [];
 
-		this.rawFilter = processData.env.npm_lifecycle_script;
+		this.rawFilter = process.env.npm_lifecycle_script;
 
         this.filter = this.parseFilter(this.rawFilter);
-        this.filter = processData.argv.slice(2)[0];
-
-		this.loadConfig();
+        this.filter = process.argv.slice(2)[0];
 
         this.annotationFilter = 'test';
 
@@ -47,9 +44,18 @@ module.exports = class TestRunner
         }
 	}
 
+    registerServiceProviders(providers)
+    {
+        this.serviceProvidersList = providers;
+    }
+
 	loadConfig()
 	{
-		if (this.fs.existsSync(this.configFile)) {
+        this.root = this.serviceProviders.path.normalize(
+            process.cwd() + '/'
+        );
+
+		if (this.serviceProviders.fs.existsSync(this.configFile)) {
 			this.config = require(this.root + this.configFile);
 		} else {
             this.config = require('./defaultConfig');
@@ -80,7 +86,7 @@ module.exports = class TestRunner
                 process.exit(0);
             }
         } catch (error) {
-            console.error(chalk.red(`  ${figures.cross} jsUnit error`));
+            console.error(this.serviceProviders.chalk.red(`  ${this.serviceProviders.figures.cross} counsel error`));
             console.error(error);
 
             process.exit(0);
@@ -110,6 +116,12 @@ module.exports = class TestRunner
 
 	async boot()
 	{
+        this.loadServiceProviders();
+
+        this.defineGlobals();
+
+        this.loadConfig();
+
         await this.reporter.beforeBoot();
 
         // Load vue specific stuff
@@ -158,9 +170,9 @@ module.exports = class TestRunner
 			}
 		} catch (error) {
             if (error instanceof Error && error.code === 'MODULE_NOT_FOUND') {
-                console.error(`  ${chalk.red(figures.cross)} Bootstrap file [${this.config.bootstrap}] don't exists.`);
+                console.error(`  ${this.serviceProviders.chalk.red(this.serviceProviders.figures.cross)} Bootstrap file [${this.config.bootstrap}] don't exists.`);
             } else {
-                console.error(chalk.red(`  ${figures.cross} jsUnit bootstrap error`));
+                console.error(this.serviceProviders.chalk.red(`  ${this.serviceProviders.figures.cross} counsel bootstrap error`));
                 console.log(error);
             }
 
@@ -174,16 +186,34 @@ module.exports = class TestRunner
         await this.reporter.afterBoot();
 	}
 
+    loadServiceProviders()
+    {
+        for (let serviceProvider in this.serviceProvidersList) {
+            this.serviceProviders[serviceProvider] = require(this.serviceProvidersList[serviceProvider]);
+        }
+    }
+
+    defineGlobals()
+    {
+        global.Reporter = this.serviceProviders.reporter;
+        global.TestCase = this.serviceProviders.testCase;
+        global.AssertionResult = this.serviceProviders.assertionResult;
+        global.moment = this.serviceProviders.moment;
+    }
+
 	async test(callback)
 	{
         await this.reporter.beforeTest();
+
+        // Write 2 spaces before first assertion result
+        process.stdout.write('  ');
 
         try {
     		for (let location in this.locations) {
     			await this.runTestsInLocation(location);
             }
         } catch (error) {
-            console.error(chalk.red(`  ${figures.cross} jsUnit error`));
+            console.error(this.serviceProviders.chalk.red(`  ${this.serviceProviders.figures.cross} counsel error`));
             console.error(error);
 
             process.exit(0);
@@ -194,7 +224,7 @@ module.exports = class TestRunner
 
 	async runTestsInClass(testClass, path, location)
 	{
-		let annotations = this.annotations.getSync(this.path(`${location}/${path}.js`));
+		let annotations = this.serviceProviders.annotations.getSync(this.path(`${location}/${path}.js`));
         let invokedSetUp = false;
         let testClassMethodIsHit = false;
 
@@ -225,18 +255,10 @@ module.exports = class TestRunner
                 continue;
             }
 
-            this.totalAssertions++;
-
-            if (this.firstAssertionHit) {
-                this.firstAssertionHit = false;
-                process.stdout.write('  ');
-            }
-
             testClassMethodIsHit = true;
 
             // Invoke setUp method if exists
             if (typeof testClass['setUp'] == 'function' && ! invokedSetUp) {
-                this.executedTests++;
                 invokedSetUp = true;
                 testClass.name = path + ' -> ' + 'setUp';
                 testClass['setUp']();
@@ -255,6 +277,16 @@ module.exports = class TestRunner
             try {
                 await testClass[name]();
 
+                if (testClass.expectedException) {
+                    Assertions.test = testClass.test;
+                    Assertions.fail(`Assert that exception [${testClass.expectedException.name}] was thrown, but is was not.`, testClass.error);
+                }
+
+                if (testClass.notExpectedException) {
+                    Assertions.test = testClass.test;
+                    Assertions.pass(`Exception [${testClass.notExpectedException.name}] was not thrown.`);
+                }
+
                 // Invoke afterEach method if exists
                 // @todo: create test for this feature
                 if (typeof testClass['afterEach'] == 'function') {
@@ -263,7 +295,7 @@ module.exports = class TestRunner
                 }
             } catch (error) {
                 if (error.message.startsWith('[vue-test-utils]')) {
-                    console.error(chalk.red(`  Vue utils error`));
+                    console.error(this.serviceProviders.chalk.red(`  Vue utils error`));
                     console.error(error);
 
                     process.exit(0);
@@ -274,15 +306,13 @@ module.exports = class TestRunner
 
                     if ((expectedException && expectedException.name) || (notExpectedException && notExpectedException.name)) {
                         if (expectedException && expectedException.name) {
-                            // test(testClass.visualError(error.stack, testClass.name), t => {
-                            //     t.is(expectedException.name, error.name, `Assert that exception [${expectedException.name}] was thrown, but is was not.`);
-                            // });
+                            Assertions.test = testClass.test;
+                            Assertions.assertEquals(expectedException.name, error.name, `Assert that exception [${expectedException.name}] was thrown, but is was not.\n  ${error.stack}`, testClass.error);
                         }
 
                         if(notExpectedException && notExpectedException.name) {
-                            // test(testClass.visualError(error.stack, testClass.name), t => {
-                            //     t.not(notExpectedException.name, error.name, `Assert that exception [${notExpectedException.name}] was not thrown, but is was.`);
-                            // });
+                            Assertions.test = testClass.test;
+                            Assertions.assertNotEquals(notExpectedException.name, error.name, `Assert that exception [${notExpectedException.name}] was not thrown, but is was.\n  ${error.stack}`, testClass.error);
                         }
                     } else {
                         throw error;
@@ -374,20 +404,20 @@ module.exports = class TestRunner
 	loadFilesFrom(path)
 	{
         try {
-            if(this.fs.lstatSync(path).isDirectory() == false) {
+            if(this.serviceProviders.fs.lstatSync(path).isDirectory() == false) {
                 return require(this.path(path));
             }
 		} catch (error) {
 			if (error instanceof Error && error.code === 'ENOENT') {
-				console.error(chalk.red(`  ${figures.cross} Directory [${path}] don't exists.`));
+				console.error(this.serviceProviders.chalk.red(`  ${this.serviceProviders.figures.cross} Directory [${path}] don't exists.`));
 			} else {
-                console.error(chalk.red(`  jsUnit error`));
+                console.error(this.serviceProviders.chalk.red(`  counsel error`));
                 console.error(error);
             }
 
 			process.exit(0);
 		}
 
-		return this.fileLoader.load(this.path(path));
+		return this.serviceProviders.fileLoader.load(this.path(path));
 	}
 }

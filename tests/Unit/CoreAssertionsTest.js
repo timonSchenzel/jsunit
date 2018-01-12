@@ -9,23 +9,6 @@ const foo = class Foo
 module.exports = class CoreAssertionsTest extends TestCase
 {
     /** @test */
-    test_html()
-    {
-        const fooInstance = new foo;
-        dd(`<div><h1>Foo</h1></div>`);
-
-        this.assertEquals(`
-            <div>
-                <h1>Foo</h1>
-            </div>
-        `, `
-            <div>
-                <h1>Bar</h1>
-            </div>
-        `);
-    }
-
-    /** @test */
     it_is_able_to_assert_true()
     {
         this.assertTrue(true);
@@ -106,7 +89,7 @@ module.exports = class CoreAssertionsTest extends TestCase
     {
         let promiseResult = await this.promiseCall();
 
-        this.assertEquals(promiseResult, 'foo');
+        this.assertEquals('foo', promiseResult);
     }
 
     async promiseCall()
@@ -114,7 +97,7 @@ module.exports = class CoreAssertionsTest extends TestCase
         return new Promise((resolve, reject) => {
             setTimeout(() => {
                 resolve('foo');
-            }, 10);
+            }, 1);
         });
     }
 }

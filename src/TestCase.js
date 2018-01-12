@@ -76,15 +76,25 @@ module.exports = class TestCase
 		this.assertions.assertNotContains(regex, contents, message);
 	}
 
-	expectException(exception, message = null)
+	expectException(exception, exceptionMessage, failureMessage)
 	{
 		this.expectedException = exception;
-		this.expectedExceptionMessage = message;
+		this.expectedExceptionMessage = exceptionMessage;
+		this.expectedExceptionFailureMessage = failureMessage;
+		this.error = {
+			raw: new Error,
+			stack: counsel.serviceProviders.stackTrace.get(),
+		}
 	}
 
-	notExpectException(exception)
+	notExpectException(exception, failureMessage)
 	{
 		this.notExpectedException = exception;
+		this.notExpectedExceptionFailureMessage = failureMessage;
+		this.error = {
+			raw: new Error,
+			stack: counsel.serviceProviders.stackTrace.get(),
+		}
 	}
 
 	visualError(stack = null, name = null)
@@ -202,6 +212,9 @@ module.exports = class TestCase
 	{
 		this.expectedException = null;
 		this.expectedExceptionMessage = null;
+		this.expectedExceptionFailureMessage = null;
 		this.notExpectedException = null;
+		this.notExpectedExceptionFailureMessage = null;
+		this.error = null;
 	}
 }

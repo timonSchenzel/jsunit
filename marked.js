@@ -1,7 +1,8 @@
 const highlight = require('cli-highlight').highlight;
 const prettier = require("prettier");
-const chalk = require("chalk");
+global.chalk = require("chalk");
 const plain = (codePart) => codePart;
+const reporter = new (new require('./src/reporters/Reporter'));
 // var marked = require('marked');
 // var TerminalRenderer = require('marked-terminal');
 // var fs = require('fs');
@@ -228,7 +229,19 @@ let html = `<div><h1 class="foo" v-for="foo in foos" style="color: red;">Foo</h1
 let formattedHtml = prettier.format(html);
 formattedHtml = formattedHtml.substring(0, formattedHtml.length - 2);
 
-console.log(highlight(formattedHtml, {language: 'html', ignoreIllegals: true, theme}));
+let actualHtml = highlight(formattedHtml, {language: 'html', ignoreIllegals: true, theme});
+
+let html2 = `<div><h1 class="foo" v-for="foo in foos" style="color: red;">Bar</h1></div>`;
+
+let formattedHtml2 = prettier.format(html2);
+formattedHtml2 = formattedHtml2.substring(0, formattedHtml2.length - 2);
+
+let expectedHtml = highlight(formattedHtml2, {language: 'html', ignoreIllegals: true, theme});
+
+console.log(actualHtml);
+console.log(expectedHtml);
+
+console.log(reporter.visualDifference(actualHtml, expectedHtml));
 
 // console.log(highlight(`
 //     [1: 'a', 2: 'b', 3: 'c']

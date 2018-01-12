@@ -1,4 +1,4 @@
-module.exports = class AssertNotTrueResult extends AssertionResult
+module.exports = class AssertNotEqualsResult extends AssertionResult
 {
     describeFailure()
     {

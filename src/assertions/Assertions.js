@@ -14,15 +14,16 @@ module.exports = class Assertions
 		        };
 		    },
 
-		    fail: (message) =>
+		    fail: (message, error = null) =>
 		    {
 		        return {
 		            pass: false,
 		            message,
+		            error,
 		        };
 		    },
 
-		    assertTrue: (actual, message) =>
+		    assertTrue: (actual, message, error = null) =>
 		    {
 		        return {
 		            pass: actual == true,
@@ -30,10 +31,11 @@ module.exports = class Assertions
 		            expected: true,
 		            actual,
 		            failureMessage: 'Value is not truthy',
+		            error,
 		        };
 		    },
 
-		    assertFalse: (actual, message) =>
+		    assertFalse: (actual, message, error = null) =>
 		    {
 		        return {
 		            pass: actual == false,
@@ -41,39 +43,42 @@ module.exports = class Assertions
 		            expected: false,
 		            actual,
 		            failureMessage: 'Value is not falsy',
+		            error,
 		        };
 		    },
 
-		    assertEquals: (expected, actual, message) =>
+		    assertEquals: (expected, actual, message, error = null) =>
 		    {
 		        return {
-		            pass: concordance.compare(actual, expected).pass == true,
+		            pass: counsel.serviceProviders.concordance.compare(actual, expected).pass == true,
 		            message,
 		            expected,
 		            actual,
+		            error,
 		        };
 		    },
 
-		    assertNotEquals: (expected, actual, message) =>
+		    assertNotEquals: (expected, actual, message, error = null) =>
 		    {
 		        return {
-		            pass: concordance.compare(actual, expected).pass == false,
+		            pass: counsel.serviceProviders.concordance.compare(actual, expected).pass == false,
 		            message,
 		            expected,
 		            actual,
+		            error,
 		        };
 		    },
 
-		    assertCount: (expected, countable, message) =>
+		    assertCount: (expected, countable, message, error = null) =>
 		    {
 		        try {
-		            return this.pipe('assertEquals', [expected, Object.keys(countable).length, message]);
+		            return this.pipe('assertEquals', [expected, Object.keys(countable).length, message, error]);
 		        } catch (error) {
 		            return this.pipe('fail', [`[${countable}] is not countable.`]);
 		        }
 		    },
 
-		    assertContains: (regex, contents, message) =>
+		    assertContains: (regex, contents, message, error = null) =>
 		    {
 		        if (typeof regex == 'string') {
 		            regex = new RegExp(regex, 'gim');
@@ -84,10 +89,11 @@ module.exports = class Assertions
 		            message,
 		            contents,
 		            regex,
+		            error,
 		        };
 		    },
 
-		    assertNotContains: (regex, contents, message) =>
+		    assertNotContains: (regex, contents, message, error = null) =>
 		    {
 		        if (typeof regex == 'string') {
 		            regex = new RegExp(regex, 'gim');
@@ -98,8 +104,9 @@ module.exports = class Assertions
 		            message,
 		            contents,
 		            regex,
+		            error,
 		        };
-		    }
+		    },
 		};
 	}
 
@@ -115,13 +122,13 @@ module.exports = class Assertions
 		let assertionResultFileName = assertion.charAt(0).toUpperCase() + assertion.substr(1);
 		let assertionResult = null;
 
-		let rootFolder = path.normalize(
+		let rootFolder = counsel.serviceProviders.path.normalize(
 		    process.cwd() + '/'
 		);
 
 		let assertionResultFileLocation = `${rootFolder}src/assertions/results/${assertionResultFileName}Result.js`;
 
-		if (fs.existsSync(assertionResultFileLocation)) {
+		if (counsel.serviceProviders.fs.existsSync(assertionResultFileLocation)) {
 			let assertionClass = require(assertionResultFileLocation);
 			assertionResult = new assertionClass(
 				assertion,

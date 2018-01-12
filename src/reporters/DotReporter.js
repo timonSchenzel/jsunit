@@ -4,13 +4,13 @@ module.exports = class DotReporter extends Reporter
     {
         super.afterEachFailedAssertion(assertion);
 
-        this.appendLog(chalk.red('x'));
+        this.appendLog(counsel.serviceProviders.chalk.red('x'));
     }
 
     afterEachPassedAssertion(assertion)
     {
         super.afterEachPassedAssertion(assertion);
 
-        this.appendLog(chalk.green('.'));
+        this.appendLog(counsel.serviceProviders.chalk.green('.'));
     }
 }

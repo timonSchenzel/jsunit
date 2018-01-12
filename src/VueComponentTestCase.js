@@ -4,7 +4,7 @@ module.exports = class VueComponentTestCase extends TestCase
     {
         super();
 
-        this.clock = sinon.useFakeTimers();
+        this.clock = counsel.serviceProviders.sinon.useFakeTimers();
     }
 
     render(template, props)
@@ -65,7 +65,7 @@ module.exports = class VueComponentTestCase extends TestCase
         super.beforeEach();
 
         this.clock.restore();
-        this.clock = sinon.useFakeTimers();
+        this.clock = counsel.serviceProviders.sinon.useFakeTimers();
     }
 
     afterEach()

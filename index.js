@@ -1,1 +1,1 @@
-require('./src/jsunit');
+require('./src/counsel');
